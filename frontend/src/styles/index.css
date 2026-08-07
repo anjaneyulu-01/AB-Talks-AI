@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-base text-ink font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
+  }
+
+  /* Visible, branded, and never removed. Keyboard users get the same quality
+     of experience as mouse users -- an accessibility requirement we treat as
+     a design constraint rather than an afterthought. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500/60 ring-offset-2 ring-offset-base;
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-ink;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-white/10;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
+    background-clip: content-box;
+  }
+
+  /* Honour the OS setting. Motion in this product is decorative -- it
+     communicates state, but never carries information that is lost without
+     it, so disabling it wholesale is safe. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* The one card treatment used across the whole product. Defined once so
+     elevation stays consistent and nobody hand-rolls a slightly different
+     border somewhere. */
+  .card {
+    @apply relative rounded-2xl border border-line bg-surface shadow-soft;
+    @apply before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl;
+    @apply before:shadow-inset-line before:content-[''];
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 ease-premium;
+    @apply hover:-translate-y-0.5 hover:border-line-strong hover:shadow-raised;
+  }
+
+  .glass {
+    @apply border border-line bg-surface/70 backdrop-blur-xl;
+  }
+
+  /* Small uppercase labels. Used for section eyebrows and metric captions. */
+  .eyebrow {
+    @apply text-micro uppercase text-ink-subtle;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-white/[0.04];
+  }
+  .skeleton::after {
+    @apply absolute inset-0 -translate-x-full animate-shimmer content-[''];
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.06),
+      transparent
+    );
+  }
+
+  /* Long-form generated prose -- interviewer questions, report narrative.
+     Tuned for reading comfort at 15px rather than raw density. */
+  .prose-interview {
+    @apply text-[0.9375rem] leading-[1.75] text-ink/90;
+  }
+  .prose-interview p + p {
+    @apply mt-4;
+  }
+  .prose-interview code {
+    @apply rounded-md bg-white/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-accent-cyan;
+  }
+  .prose-interview pre {
+    @apply my-4 overflow-x-auto rounded-xl border border-line bg-base-200 p-4;
+  }
+  .prose-interview pre code {
+    @apply bg-transparent p-0 text-ink/90;
+  }
+  .prose-interview strong {
+    @apply font-semibold text-ink;
+  }
+  .prose-interview ul {
+    @apply my-3 list-disc space-y-1.5 pl-5 marker:text-ink-faint;
+  }
+  .prose-interview ol {
+    @apply my-3 list-decimal space-y-1.5 pl-5 marker:text-ink-faint;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-br from-ink via-ink to-ink-muted bg-clip-text text-transparent;
+  }
+  .text-gradient-brand {
+    @apply bg-gradient-to-br from-brand-300 via-brand-400 to-accent-cyan bg-clip-text text-transparent;
+  }
+
+  /* Fades a decorative grid out toward the edges so it never competes with
+     content or creates a hard seam. */
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+  }
+  .mask-fade-radial {
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Tabular figures for anything that animates or sits in a column. Stops
+     scores and timers from jittering as digits change width. */
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

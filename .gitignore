@@ -1,0 +1,84 @@
+# ---------------------------------------------------------------------------
+# Secrets — never commit these.
+#
+# `.env` files hold live API keys and database credentials. The `.example`
+# variants are the templates that DO get committed, so the negation below is
+# load-bearing: without it the `.env*` glob would swallow them too.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+.venv/
+venv/
+ENV/
+env/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# ---------------------------------------------------------------------------
+# Node / frontend
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------------------------------------------------------------------------
+# Editors
+# ---------------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# OS
+# ---------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ---------------------------------------------------------------------------
+# Local scratch
+# ---------------------------------------------------------------------------
+*.log
+.tmp/
+tmp/
+scratch/
+
+# Contains a live Breeth credential in env
+.mcp.json
