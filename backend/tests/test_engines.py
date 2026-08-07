@@ -117,7 +117,14 @@ def test_fluent_candidate_opens_harder_than_a_struggling_one():
 # Planner
 # ---------------------------------------------------------------------------
 
-def test_plan_never_repeats_a_topic():
+def test_plan_never_accidentally_repeats_a_topic():
+    """No day may appear twice by accident.
+
+    A day CAN legitimately appear twice, but only as a deliberate revisit at a
+    higher difficulty, used to top a short plan up to the spec minimum. The
+    invariant is therefore: first-pass probes are all distinct, and any repeat
+    is an explicit revisit. Never more than two passes on one topic.
+    """
     curriculum = load_curriculum()
     from app.data.loader import load_candidates
 
@@ -125,8 +132,17 @@ def test_plan_never_repeats_a_topic():
         plan = build_plan(
             build_profile(candidate, curriculum), min_turns=8, max_turns=14
         )
-        days = [p.day for p in plan.probes]
-        assert len(days) == len(set(days)), f"{candidate.id} has a repeated topic"
+
+        first_pass = [p.day for p in plan.probes if "Coming back" not in p.rationale]
+        assert len(first_pass) == len(set(first_pass)), (
+            f"{candidate.id} repeats a topic within the first pass"
+        )
+
+        counts: dict[int, int] = {}
+        for probe in plan.probes:
+            counts[probe.day] = counts.get(probe.day, 0) + 1
+        over = {d: n for d, n in counts.items() if n > 2}
+        assert not over, f"{candidate.id} probes a topic more than twice: {over}"
 
 
 def test_plan_covers_multiple_competencies():
@@ -140,6 +156,76 @@ def test_plan_covers_multiple_competencies():
         )
         if len(plan.probes) >= 6:
             assert len({p.competency for p in plan.probes}) >= 3
+
+
+def test_every_candidate_meets_the_specification_minimum():
+    """Hackathon spec: >= 8 questions covering >= 4 distinct curriculum days.
+
+    This caught a real compliance failure. Four of the twenty candidates fell
+    short: Mia Alvarez and Bethany Cole simply do not have eight eligible
+    topics after their skips, and Gerald Combs and Isabella Rossi lost topics
+    to the one-failed-probe cap with nothing left to backfill.
+
+    Swept across the whole dataset rather than a sample, because the failure
+    was invisible on the candidates anyone would demo with.
+    """
+    curriculum = load_curriculum()
+    from app.data.loader import load_candidates
+
+    failures = []
+    for candidate in load_candidates():
+        plan = build_plan(
+            build_profile(candidate, curriculum), min_turns=8, max_turns=14
+        )
+        days = {p.day for p in plan.probes}
+        if len(plan.probes) < 8 or len(days) < 4:
+            failures.append(
+                f"{candidate.id} {candidate.name}: "
+                f"{len(plan.probes)} questions, {len(days)} days"
+            )
+
+    assert not failures, "candidates below the spec minimum:\n" + "\n".join(failures)
+
+
+def test_revisit_probes_never_target_a_failed_topic():
+    """Returning for a second pass at something they failed is grinding.
+
+    The controller pivots away from topics that aren't working; the planner
+    must not schedule a deliberate return to one.
+    """
+    curriculum = load_curriculum()
+    from app.data.loader import load_candidates
+
+    for candidate in load_candidates():
+        profile = build_profile(candidate, curriculum)
+        plan = build_plan(profile, min_turns=8, max_turns=14)
+
+        revisits = [p for p in plan.probes if "Coming back" in p.rationale]
+        for probe in revisits:
+            assert probe.evidence != EvidenceStrength.FAILED, (
+                f"{candidate.id} revisits failed topic day {probe.day}"
+            )
+
+
+def test_revisits_go_deeper_than_the_first_pass():
+    """A second pass must earn its place by being harder, not by repeating."""
+    curriculum = load_curriculum()
+    profile = build_profile(get_candidate("CAND-011"), curriculum)  # only 5 topics
+    plan = build_plan(profile, min_turns=8, max_turns=14)
+
+    first_pass: dict[int, int] = {}
+    for probe in plan.probes:
+        if "Coming back" not in probe.rationale:
+            first_pass[probe.day] = probe.difficulty.value
+
+    revisits = [p for p in plan.probes if "Coming back" in p.rationale]
+    assert revisits, "CAND-011 has 5 eligible topics and must be topped up"
+
+    for probe in revisits:
+        if probe.day in first_pass:
+            assert probe.difficulty.value > first_pass[probe.day], (
+                f"revisit on day {probe.day} is not harder than the first pass"
+            )
 
 
 def test_plan_never_opens_at_maximum_difficulty():

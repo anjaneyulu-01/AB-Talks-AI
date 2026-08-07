@@ -229,6 +229,89 @@ def _rationale(topic: TopicEvidence, difficulty: Difficulty, competency: Compete
     return f"{stem}, {intent} — probing {competency.label.lower()}."
 
 
+def _build_revisits(
+    topics: list[TopicEvidence],
+    existing: list[tuple[TopicEvidence, Difficulty, Competency]],
+    needed: int,
+    used_competencies: list[Competency],
+) -> list[tuple[TopicEvidence, Difficulty, Competency]]:
+    """Second-pass probes on topics already in the plan.
+
+    Some candidates simply do not have eight eligible topics. Mia Alvarez
+    skipped half the cohort and has five; Gerald Combs has eight but three of
+    them are failures, and we probe at most one of those.
+
+    The hackathon specification requires a minimum of **eight questions**, not
+    eight distinct topics -- and that distinction happens to match what a real
+    interviewer does. Faced with a candidate who covered five areas, you do not
+    end after five questions; you go deeper on the strongest material.
+
+    So each revisit takes a topic already planned and asks again at a higher
+    difficulty, probing a different competency. Never on a `FAILED` topic --
+    returning for a second pass at something they could not do during the
+    cohort is exactly the grinding the controller exists to prevent.
+    """
+    if needed <= 0:
+        return []
+
+    # Strongest evidence first: those topics support a harder second question.
+    ranked = sorted(
+        (t for t in topics if t.strength != EvidenceStrength.FAILED),
+        key=lambda t: _EVIDENCE_VALUE.get(t.strength, 0.4),
+        reverse=True,
+    )
+    if not ranked:
+        return []
+
+    planned_difficulty = {t.day: d for t, d, _ in existing}
+    usage = {c: used_competencies.count(c) for c in Competency}
+
+    revisits: list[tuple[TopicEvidence, Difficulty, Competency]] = []
+    revisited_days: set[int] = set()
+
+    # Two sweeps so we spread across topics before doubling up on any one.
+    for sweep in range(2):
+        for topic in ranked:
+            if len(revisits) >= needed:
+                break
+            if sweep == 0 and topic.day in revisited_days:
+                continue
+
+            base = planned_difficulty.get(topic.day, topic.strength.base_difficulty)
+            harder = base.shifted(+1 + sweep)
+
+            eligible = [
+                c for c in DIFFICULTY_COMPETENCIES[harder] if c != Competency.CONFIDENCE
+            ] or list(DIFFICULTY_COMPETENCIES[harder])
+            competency = min(
+                eligible, key=lambda c: (usage[c], list(Competency).index(c))
+            )
+            usage[competency] += 1
+
+            revisits.append((topic, harder, competency))
+            revisited_days.add(topic.day)
+        if len(revisits) >= needed:
+            break
+
+    return revisits[:needed]
+
+
+def _revisit_rationale(
+    topic: TopicEvidence, difficulty: Difficulty, competency: Competency
+) -> str:
+    """Explains a second pass honestly.
+
+    The candidate can read this, so it must not imply they are being retested
+    because they did badly. The truthful framing is the flattering one: we are
+    coming back because there is more depth here worth reaching.
+    """
+    return (
+        f"Coming back to Day {topic.day} from a different angle — there's more "
+        f"depth here worth reaching, so this one goes to "
+        f"{difficulty.label.lower()} and looks at {competency.label.lower()}."
+    )
+
+
 def _pick_objective(topic: TopicEvidence, difficulty: Difficulty) -> str:
     """Choose which learning objective grounds this question.
 
@@ -276,9 +359,29 @@ def build_plan(
         slot = difficulty_order[rank]
         paired[slot] = (topics[topic_idx], difficulties[slot], competencies[slot])
 
+    # The specification requires a minimum of eight questions. If distinct
+    # eligible topics cannot supply that -- because the candidate skipped a lot,
+    # or because we deliberately probe at most one failed topic -- top up with
+    # deeper second passes rather than ending the interview short.
+    shortfall = min_turns - len(paired)
+    revisits = _build_revisits(
+        topics, paired, shortfall, [c for _, _, c in paired]
+    )
+    if revisits:
+        logger.info(
+            "plan_topped_up_with_revisits",
+            extra={
+                "candidate": profile.candidate_id,
+                "distinct_topics": len(paired),
+                "revisits": len(revisits),
+            },
+        )
+
     probes: list[Probe] = []
-    for index, (topic, difficulty, competency) in enumerate(paired):
+    for index, (topic, difficulty, competency) in enumerate(paired + revisits):
         objective = _pick_objective(topic, difficulty)
+        is_revisit = index >= len(paired)
+
         probes.append(
             Probe(
                 index=index,
@@ -290,7 +393,11 @@ def build_plan(
                 competency=competency,
                 difficulty=difficulty,
                 evidence=topic.strength,
-                rationale=_rationale(topic, difficulty, competency),
+                rationale=(
+                    _revisit_rationale(topic, difficulty, competency)
+                    if is_revisit
+                    else _rationale(topic, difficulty, competency)
+                ),
             )
         )
 
