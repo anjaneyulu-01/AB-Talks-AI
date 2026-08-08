@@ -35,17 +35,20 @@ const buttonVariants = cva(
       variant: {
         // The one primary action per screen. Deliberately the only element
         // that gets a glow — scarcity is what makes it read as "the" action.
+        // The one primary action per screen. It is the only element that
+        // gets a glow *and* the only one with a sheen — scarcity is what
+        // makes it read as "the" action rather than decoration.
         primary: cn(
-          'bg-brand-600 text-white shadow-glow',
-          'hover:bg-brand-500 hover:shadow-[0_0_0_1px_rgba(99,102,241,0.3),0_12px_40px_-8px_rgba(99,102,241,0.5)]',
+          'group/btn relative overflow-hidden bg-brand-600 text-white shadow-glow',
+          'hover:bg-brand-500 hover:shadow-glow-lg',
           'active:scale-[0.985]',
         ),
         secondary: cn(
           'border border-line-strong bg-surface-raised text-ink shadow-soft',
-          'hover:border-white/20 hover:bg-surface-hover',
+          'hover:border-line-strong hover:bg-surface-hover hover:shadow-raised',
           'active:scale-[0.985]',
         ),
-        ghost: 'text-ink-muted hover:bg-white/[0.06] hover:text-ink',
+        ghost: 'text-ink-muted hover:bg-tint/[0.06] hover:text-ink',
         outline: cn(
           'border border-line-strong text-ink',
           'hover:border-brand-500/50 hover:bg-brand-500/[0.07] hover:text-brand-300',
@@ -77,13 +80,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled={disabled || loading}
       {...props}
     >
+      {/* A single highlight sweeping across on hover. Pointer-events-none and
+          motion-safe only — it is pure decoration and must never intercept a
+          click or fire for someone who asked for reduced motion. */}
+      {variant === 'primary' && (
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 opacity-0',
+            'bg-gradient-to-r from-transparent via-white/25 to-transparent',
+            'motion-safe:group-hover/btn:animate-sheen motion-safe:group-hover/btn:opacity-100',
+          )}
+        />
+      )}
       {loading && (
         <span
           className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"
           aria-hidden
         />
       )}
-      {children}
+      <span className="relative flex items-center gap-2">{children}</span>
     </button>
   ),
 )
@@ -128,7 +144,7 @@ const badgeVariants = cva(
   {
     variants: {
       tone: {
-        neutral: 'border-line-strong bg-white/[0.05] text-ink-muted',
+        neutral: 'border-line-strong bg-tint/[0.05] text-ink-muted',
         brand: 'border-brand-500/30 bg-brand-500/10 text-brand-300',
         cyan: 'border-accent-cyan/30 bg-accent-cyan/10 text-accent-cyan',
         success: 'border-success/30 bg-success/10 text-success',
@@ -177,7 +193,7 @@ export function Progress({
     <div
       className={cn(
         'h-1.5 w-full overflow-hidden rounded-full',
-        showTrack && 'bg-white/[0.07]',
+        showTrack && 'bg-tint/[0.07]',
         className,
       )}
       role="progressbar"
@@ -261,7 +277,7 @@ export function EmptyState({
     <div
       className={cn(
         'flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed',
-        'border-line-strong bg-white/[0.015] px-6 py-14 text-center',
+        'border-line-strong bg-tint/[0.015] px-6 py-14 text-center',
         className,
       )}
     >

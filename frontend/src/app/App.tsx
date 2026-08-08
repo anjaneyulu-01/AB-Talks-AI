@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { AppShell } from '@/app/AppShell'
 import { RouteFallback } from '@/app/RouteFallback'
+import { ThemeProvider } from '@/app/theme'
 
 /**
  * Route-level code splitting.
@@ -43,8 +44,9 @@ const queryClient = new QueryClient({
 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
@@ -56,10 +58,11 @@ export function App() {
             {/* The interview runs outside the shell: no nav, no distractions.
                 An immersive room, not a page inside an app. */}
             <Route path="/interview/:sessionId" element={<InterviewPage />} />
-            <Route path="*" element={<LandingPage />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </QueryClientProvider>
+              <Route path="*" element={<LandingPage />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }

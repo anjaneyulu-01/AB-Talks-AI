@@ -1,14 +1,38 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    color-scheme: dark;
+    /* Easing curves as variables so keyframe animations in the Tailwind
+       config and inline Framer transitions can share one motion language. */
+    --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   * {
     @apply border-line;
+  }
+
+  /* Theme switching.
+     Colours cross-fade so the change reads as a considered transition rather
+     than a jarring flash. Deliberately narrow: only colour properties, and
+     only while `.theme-transition` is set (~220ms around the toggle). Leaving
+     a global colour transition on permanently makes every hover feel laggy. */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition:
+      background-color 220ms var(--ease-smooth),
+      border-color 220ms var(--ease-smooth),
+      color 220ms var(--ease-smooth),
+      fill 220ms var(--ease-smooth),
+      stroke 220ms var(--ease-smooth) !important;
+    transition-delay: 0ms !important;
   }
 
   html {
@@ -70,12 +94,12 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-white/10;
+    @apply rounded-full bg-tint/10;
     border: 2px solid transparent;
     background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/20;
+    @apply bg-tint/20;
     background-clip: content-box;
   }
 
@@ -119,14 +143,17 @@
   }
 
   .skeleton {
-    @apply relative overflow-hidden rounded-lg bg-white/[0.04];
+    @apply relative overflow-hidden rounded-lg bg-tint/[0.04];
   }
   .skeleton::after {
     @apply absolute inset-0 -translate-x-full animate-shimmer content-[''];
+    /* The sweep must be *lighter* than the skeleton in dark mode and *darker*
+       in light mode. A fixed white gradient is invisible on a light skeleton,
+       which turns a loading affordance into a dead grey box. */
     background-image: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.06),
+      hsl(var(--tint) / 0.07),
       transparent
     );
   }
@@ -140,7 +167,7 @@
     @apply mt-4;
   }
   .prose-interview code {
-    @apply rounded-md bg-white/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-accent-cyan;
+    @apply rounded-md bg-tint/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-accent-cyan;
   }
   .prose-interview pre {
     @apply my-4 overflow-x-auto rounded-xl border border-line bg-base-200 p-4;

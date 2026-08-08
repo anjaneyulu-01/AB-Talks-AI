@@ -64,7 +64,7 @@ export function CohortJourney({
             return (
               <span
                 key={day}
-                className="h-6 min-w-[5px] flex-1 rounded-[3px] bg-white/[0.045]"
+                className="h-6 min-w-[5px] flex-1 rounded-[3px] bg-tint/[0.045]"
               />
             )
           }

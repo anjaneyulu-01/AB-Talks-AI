@@ -41,10 +41,12 @@ export function CompetencyRadar({ breakdown }: { breakdown: ScoreBreakdown[] }) 
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="72%">
-          <PolarGrid stroke="rgba(255,255,255,0.08)" />
+          {/* Theme tokens, not literals. `rgba(255,255,255,0.08)` was a white
+              grid that vanished on a white background in light mode. */}
+          <PolarGrid stroke="hsl(var(--line-strong))" />
           <PolarAngleAxis
             dataKey="axis"
-            tick={{ fill: '#6E6E85', fontSize: 10 }}
+            tick={{ fill: 'hsl(var(--ink-subtle))', fontSize: 10 }}
             tickLine={false}
           />
           <PolarRadiusAxis
@@ -55,9 +57,9 @@ export function CompetencyRadar({ breakdown }: { breakdown: ScoreBreakdown[] }) 
           />
           <Radar
             dataKey="score"
-            stroke="#6366F1"
+            stroke="hsl(var(--brand-500))"
             strokeWidth={2}
-            fill="#6366F1"
+            fill="hsl(var(--brand-500))"
             fillOpacity={0.18}
             isAnimationActive
             animationDuration={900}

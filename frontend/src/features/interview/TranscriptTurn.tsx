@@ -83,7 +83,7 @@ function InterviewerTurn({
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-lg px-2 py-1 -ml-2',
                   'text-xs font-medium text-ink-faint transition-colors',
-                  'hover:bg-white/[0.04] hover:text-ink-subtle',
+                  'hover:bg-tint/[0.04] hover:text-ink-subtle',
                 )}
                 aria-expanded={showReason}
               >

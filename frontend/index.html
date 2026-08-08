@@ -1,7 +1,28 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Runs before first paint. React mounts after paint, so applying the
+      // theme in an effect would show every dark-mode user a white flash on
+      // load. This decides the class; the ThemeProvider adopts it rather than
+      // re-deciding, so there is no second repaint either.
+      (function () {
+        try {
+          var stored = localStorage.getItem('abtalks-theme')
+          var dark =
+            stored === 'dark' ||
+            ((stored === 'system' || !stored) &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+        } catch (e) {
+          // Storage blocked. Fall back to dark, which suits the product's
+          // most common usage time.
+          document.documentElement.classList.add('dark')
+        }
+      })()
+    </script>
     <!--
       `viewport-fit=cover` is required for `env(safe-area-inset-*)` to return
       anything other than 0. Without it the composer's safe-area padding is a
@@ -15,7 +36,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="light dark" />
     <title>ABTalks · Interview Intelligence</title>
     <meta
       name="description"

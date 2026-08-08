@@ -154,9 +154,9 @@ function HeroPreview() {
     <Card className="overflow-hidden p-0 shadow-float">
       <div className="flex items-center gap-2 border-b border-line bg-surface-raised px-4 py-3">
         <div className="flex gap-1.5">
-          <span className="size-2.5 rounded-full bg-white/10" />
-          <span className="size-2.5 rounded-full bg-white/10" />
-          <span className="size-2.5 rounded-full bg-white/10" />
+          <span className="size-2.5 rounded-full bg-tint/10" />
+          <span className="size-2.5 rounded-full bg-tint/10" />
+          <span className="size-2.5 rounded-full bg-tint/10" />
         </div>
         <div className="ml-3 flex items-center gap-2 text-xs text-ink-faint">
           <span className="font-medium text-ink-subtle">Interview in progress</span>
@@ -217,7 +217,7 @@ function HeroPreview() {
                   <span className="text-ink-subtle">{label}</span>
                   <span className="nums text-ink-muted">{value}</span>
                 </div>
-                <div className="h-1 overflow-hidden rounded-full bg-white/[0.07]">
+                <div className="h-1 overflow-hidden rounded-full bg-tint/[0.07]">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-cyan"
                     style={{ width: `${value}%` }}

@@ -3,6 +3,7 @@ import { Activity, LayoutDashboard, Sparkles } from 'lucide-react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Container, Tooltip } from '@/components/ui/primitives'
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -54,8 +55,8 @@ export function AppShell() {
                     'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium',
                     'transition-colors duration-200',
                     active
-                      ? 'bg-white/[0.06] text-ink'
-                      : 'text-ink-subtle hover:bg-white/[0.04] hover:text-ink-muted',
+                      ? 'bg-tint/[0.06] text-ink'
+                      : 'text-ink-subtle hover:bg-tint/[0.04] hover:text-ink-muted',
                   )}
                 >
                   <Icon className="size-4 shrink-0" />
@@ -63,6 +64,7 @@ export function AppShell() {
                 </NavLink>
               )
             })}
+            <ThemeToggle className="ml-1" />
             <ServiceStatus />
           </nav>
         </Container>

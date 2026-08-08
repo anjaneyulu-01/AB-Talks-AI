@@ -370,7 +370,7 @@ function PlanPreview({ probes }: { probes: PlannedProbe[] }) {
             key={probe.index}
             className="flex items-start gap-3 rounded-xl border border-line bg-base-200/60 p-3"
           >
-            <span className="nums mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-[0.6875rem] font-semibold text-ink-subtle">
+            <span className="nums mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-lg bg-tint/[0.05] text-[0.6875rem] font-semibold text-ink-subtle">
               {i + 1}
             </span>
             <div className="min-w-0 flex-1">
@@ -467,7 +467,7 @@ function ExclusionPanel({
               {skipped.map((topic) => (
                 <div
                   key={topic.day}
-                  className="flex items-center gap-2 rounded-lg border border-line bg-white/[0.02] px-2.5 py-2"
+                  className="flex items-center gap-2 rounded-lg border border-line bg-tint/[0.02] px-2.5 py-2"
                 >
                   <span className="nums text-[0.6875rem] text-ink-faint">D{topic.day}</span>
                   <span className="truncate text-xs text-ink-subtle">{topic.title}</span>
@@ -534,7 +534,7 @@ function HistoryPanel({
                 <ArrowRight className="size-3" />
               </span>
             </div>
-            <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-white/[0.08]">
+            <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-tint/[0.08]">
               <div
                 className="h-full rounded-full bg-brand-400"
                 style={{
@@ -546,7 +546,7 @@ function HistoryPanel({
         )}
 
         {trend.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-line-strong bg-white/[0.015] p-5 text-center">
+          <div className="rounded-xl border border-dashed border-line-strong bg-tint/[0.015] p-5 text-center">
             <p className="text-sm font-medium text-ink">
               {inProgress ? 'No completed interviews yet' : 'No interviews yet'}
             </p>

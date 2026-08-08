@@ -49,10 +49,10 @@ export function RailContent({ state }: { state: InterviewState }) {
           <span className="pb-1 text-xs text-ink-faint">/ 100</span>
         </div>
 
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-tint/[0.07]">
           <motion.div
             className="h-full rounded-full"
-            style={{ backgroundColor: band.hex }}
+            style={{ backgroundColor: band.css }}
             animate={{ width: `${live.readiness}%` }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
@@ -84,10 +84,10 @@ export function RailContent({ state }: { state: InterviewState }) {
                       {score}
                     </span>
                   </div>
-                  <div className="h-1 overflow-hidden rounded-full bg-white/[0.06]">
+                  <div className="h-1 overflow-hidden rounded-full bg-tint/[0.06]">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ backgroundColor: tone.hex }}
+                      style={{ backgroundColor: tone.css }}
                       animate={{ width: `${score}%` }}
                       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                     />
@@ -208,7 +208,7 @@ export function MobileStatStrip({
             key={i}
             className={cn(
               'h-1 flex-1 rounded-full transition-colors duration-500',
-              i < answered ? 'bg-brand-400' : 'bg-white/[0.09]',
+              i < answered ? 'bg-brand-400' : 'bg-tint/[0.09]',
             )}
           />
         ))}

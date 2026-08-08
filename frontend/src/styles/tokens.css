@@ -1,0 +1,186 @@
+/**
+ * Design tokens.
+ *
+ * ## Why this file exists
+ *
+ * The previous palette hardcoded a cold blue-black base (#0A0A0F) with default
+ * indigo (#6366F1) — the exact combination every AI product ships, and it made
+ * a considered product look like a template. It also made light mode
+ * impossible: colours were baked into components rather than referenced.
+ *
+ * Every colour is now a CSS custom property. Components reference semantic
+ * names (`bg-surface`, `text-ink`, `border-line`) and never a literal, so
+ * switching theme swaps the tokens and nothing else has to change.
+ *
+ * ## The two decisions that make this palette work
+ *
+ * **1. Warm neutrals, not blue-black.** The base carries a subtle violet-warm
+ * cast rather than a blue one. Cold blue-greys read clinical — like a
+ * dashboard that is measuring you. This product's stated job is to *reduce*
+ * anxiety before an interview, and warmth does more for that than any amount
+ * of encouraging copy. In light mode the same principle gives a warm paper
+ * white rather than a clinical #FFFFFF.
+ *
+ * **2. The brand accent is constrained, so make it rich.** Score bands already
+ * own green (exceptional), cyan (strong), amber (developing) and rose
+ * (emerging). A brand colour from any of those families would collide
+ * semantically — "is this green because it's on-brand or because I did well?"
+ * That leaves the violet family, so rather than settle for default indigo it
+ * is pushed to a true saturated violet that reads as deliberate.
+ *
+ * ## Format
+ *
+ * Values are raw HSL channels (`258 90% 66%`), not `hsl(...)`, so Tailwind's
+ * `<alpha-value>` placeholder works: `bg-brand-500/20` resolves correctly.
+ */
+
+@layer base {
+  :root {
+    /* ---- Surfaces ------------------------------------------------------ */
+    /* Warm off-white. Pure #FFF under a long reading session is fatiguing
+       and reads as unfinished; paper-white reads as considered. */
+    --bg: 45 33% 98%;
+    --bg-50: 45 25% 96%;
+    --bg-100: 45 22% 94%;
+    --bg-200: 45 20% 92%;
+    --bg-900: 45 40% 99%;
+
+    /* Cards are pure white so they lift cleanly off the warm ground. */
+    --surface: 0 0% 100%;
+    --surface-raised: 0 0% 100%;
+    --surface-overlay: 0 0% 100%;
+    --surface-hover: 45 25% 97%;
+
+    /* ---- Lines --------------------------------------------------------- */
+    --line: 265 14% 90%;
+    --line-strong: 265 12% 84%;
+
+    /* ---- Text ---------------------------------------------------------- */
+    /* Warm near-black rather than pure black — softer, and it matches the
+       warmth of the ground so the page reads as one material. */
+    --ink: 265 30% 12%;
+    --ink-muted: 265 12% 38%;
+    --ink-subtle: 265 10% 52%;
+    --ink-faint: 265 9% 64%;
+
+    /* ---- Brand --------------------------------------------------------- */
+    /* Darker than the dark-theme brand: the same violet at 66% lightness
+       fails contrast against white. */
+    --brand-50: 258 100% 97%;
+    --brand-100: 258 95% 94%;
+    --brand-300: 258 85% 74%;
+    --brand-400: 258 80% 64%;
+    --brand-500: 258 78% 56%;
+    --brand-600: 258 74% 48%;
+    --brand-700: 258 70% 42%;
+    --brand-900: 258 60% 28%;
+
+    --accent-cyan: 190 85% 40%;
+    --accent-teal: 172 75% 36%;
+
+    /* ---- Score bands --------------------------------------------------- */
+    /* Darkened for light mode. The dark-theme emerald (#34D399) on white is
+       roughly 1.9:1 against the background — unreadable as text. */
+    --band-exceptional: 160 78% 32%;
+    --band-strong: 190 82% 36%;
+    --band-developing: 35 88% 40%;
+    --band-emerging: 350 72% 48%;
+
+    --success: 160 78% 32%;
+    --warn: 35 88% 40%;
+    --danger: 350 72% 48%;
+
+    /* ---- Tint ---------------------------------------------------------- */
+    /* One token drives every translucent overlay in the product. In light
+       mode it is black, in dark mode white — so `bg-tint/[0.06]` is a subtle
+       wash in both, instead of white-on-white and therefore invisible. */
+    --tint: 265 40% 10%;
+
+    /* ---- Elevation ----------------------------------------------------- */
+    /* Light mode needs genuinely soft, wide shadows to convey lift. Dark mode
+       uses near-black shadows that would be invisible here. */
+    --shadow-color: 265 35% 45%;
+    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.06),
+      0 4px 14px -4px hsl(var(--shadow-color) / 0.1);
+    --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.06),
+      0 12px 28px -8px hsl(var(--shadow-color) / 0.14);
+    --shadow-float: 0 8px 16px -4px hsl(var(--shadow-color) / 0.12),
+      0 24px 56px -16px hsl(var(--shadow-color) / 0.2);
+    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.6);
+
+    /* Decorative grid + ambient glow, tuned per theme. */
+    --grid-line: 265 20% 20%;
+    --grid-alpha: 0.045;
+    --glow-alpha: 0.07;
+
+    color-scheme: light;
+  }
+
+  .dark {
+    /* ---- Surfaces ------------------------------------------------------ */
+    /* Not #0A0A0F. The hue is violet-warm, and the steps between surfaces are
+       small and even so elevation reads without a single hard line. */
+    --bg: 265 24% 5%;
+    --bg-50: 265 20% 10%;
+    --bg-100: 265 21% 8%;
+    --bg-200: 265 22% 7%;
+    --bg-900: 265 28% 3%;
+
+    --surface: 265 20% 8%;
+    --surface-raised: 265 18% 11%;
+    --surface-overlay: 264 16% 14%;
+    --surface-hover: 264 15% 16%;
+
+    /* ---- Lines --------------------------------------------------------- */
+    --line: 265 15% 18%;
+    --line-strong: 265 14% 25%;
+
+    /* ---- Text ---------------------------------------------------------- */
+    /* Warm off-white. Pure #FFF on a dark ground glares and causes halation
+       on long text — a real problem on an interview screen at 1am. */
+    --ink: 45 30% 96%;
+    --ink-muted: 265 10% 70%;
+    --ink-subtle: 265 9% 52%;
+    --ink-faint: 265 9% 38%;
+
+    /* ---- Brand --------------------------------------------------------- */
+    --brand-50: 258 90% 96%;
+    --brand-100: 258 90% 92%;
+    --brand-300: 258 95% 80%;
+    --brand-400: 258 92% 72%;
+    --brand-500: 258 90% 66%;
+    --brand-600: 258 84% 58%;
+    --brand-700: 258 78% 50%;
+    --brand-900: 258 60% 30%;
+
+    --accent-cyan: 188 92% 62%;
+    --accent-teal: 172 80% 55%;
+
+    /* ---- Score bands --------------------------------------------------- */
+    --band-exceptional: 158 72% 55%;
+    --band-strong: 188 88% 60%;
+    --band-developing: 40 94% 62%;
+    --band-emerging: 350 90% 70%;
+
+    --success: 158 72% 55%;
+    --warn: 40 94% 62%;
+    --danger: 350 90% 70%;
+
+    --tint: 0 0% 100%;
+
+    --shadow-color: 265 60% 2%;
+    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.5),
+      0 4px 16px -4px hsl(var(--shadow-color) / 0.55);
+    --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.5),
+      0 12px 32px -8px hsl(var(--shadow-color) / 0.65);
+    --shadow-float: 0 8px 16px -4px hsl(var(--shadow-color) / 0.55),
+      0 24px 64px -16px hsl(var(--shadow-color) / 0.75);
+    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.05);
+
+    --grid-line: 0 0% 100%;
+    --grid-alpha: 0.035;
+    --glow-alpha: 0.1;
+
+    color-scheme: dark;
+  }
+}

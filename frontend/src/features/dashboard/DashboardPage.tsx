@@ -129,7 +129,7 @@ export function DashboardPage() {
               className={cn(
                 'flex-1 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors sm:flex-none sm:py-1.5',
                 sort === key
-                  ? 'bg-white/[0.08] text-ink'
+                  ? 'bg-tint/[0.08] text-ink'
                   : 'text-ink-subtle hover:text-ink-muted',
               )}
             >

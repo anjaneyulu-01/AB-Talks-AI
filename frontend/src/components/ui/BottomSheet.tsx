@@ -102,13 +102,13 @@ export function BottomSheet({
             )}
           >
             <div className="shrink-0 px-5 pb-2 pt-3">
-              <div className="mx-auto h-1 w-10 rounded-full bg-white/15" aria-hidden />
+              <div className="mx-auto h-1 w-10 rounded-full bg-tint/15" aria-hidden />
               <div className="mt-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-ink">{title}</h2>
                 <button
                   onClick={onClose}
                   aria-label="Close"
-                  className="flex size-9 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-white/[0.06] hover:text-ink"
+                  className="flex size-9 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-tint/[0.06] hover:text-ink"
                 >
                   <X className="size-4" />
                 </button>

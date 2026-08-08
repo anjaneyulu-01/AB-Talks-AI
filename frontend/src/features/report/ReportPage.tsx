@@ -431,7 +431,7 @@ function RoadmapCard({ report }: { report: FeedbackReport }) {
                       {step.resources.map((resource) => (
                         <span
                           key={resource}
-                          className="rounded-md bg-white/[0.05] px-1.5 py-0.5 text-[0.625rem] text-ink-subtle"
+                          className="rounded-md bg-tint/[0.05] px-1.5 py-0.5 text-[0.625rem] text-ink-subtle"
                         >
                           {resource}
                         </span>

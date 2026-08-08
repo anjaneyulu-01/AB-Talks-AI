@@ -2,6 +2,7 @@ import { Clock, Layers, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
+import { ThemeToggleCompact } from '@/components/ui/ThemeToggle'
 import { Badge, Tooltip } from '@/components/ui/primitives'
 import type { InterviewState } from '@/lib/types'
 import { cn, formatClock } from '@/lib/utils'
@@ -28,7 +29,7 @@ export function InterviewTopBar({
     <header className="relative z-20 shrink-0 border-b border-line bg-base/90 backdrop-blur-xl">
       {/* Progress lives on the very top edge — ambient, always visible, never
           competing with content for space. */}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-white/[0.05]">
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-tint/[0.05]">
         <div
           className="h-full bg-gradient-to-r from-brand-500 to-accent-cyan transition-all duration-700 ease-premium"
           style={{ width: `${progress}%` }}
@@ -83,10 +84,12 @@ export function InterviewTopBar({
             </span>
           </span>
 
+          <ThemeToggleCompact />
+
           <Tooltip label="Leave the interview" side="bottom">
             <Link
               to={`/candidates/${profile.candidate_id}`}
-              className="flex size-9 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-white/[0.06] hover:text-ink-muted"
+              className="flex size-9 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-tint/[0.06] hover:text-ink-muted"
               aria-label="Leave interview"
             >
               <X className="size-4" />

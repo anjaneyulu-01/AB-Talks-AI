@@ -12,7 +12,7 @@ export function RouteFallback() {
     <div className="flex min-h-dvh items-center justify-center bg-base">
       <div className="flex flex-col items-center gap-4">
         <Logo className="size-10 animate-breathe" />
-        <div className="h-0.5 w-24 overflow-hidden rounded-full bg-white/[0.07]">
+        <div className="h-0.5 w-24 overflow-hidden rounded-full bg-tint/[0.07]">
           <div className="h-full w-1/2 animate-shimmer rounded-full bg-gradient-to-r from-transparent via-brand-500 to-transparent" />
         </div>
       </div>

@@ -22,16 +22,33 @@ export function scoreBand(score: number): ScoreBand {
   return 'emerging'
 }
 
+/**
+ * `css` resolves through the theme token rather than a fixed hex.
+ *
+ * Inline styles and SVG attributes accept `hsl(var(--x))` directly, so a bar
+ * or chart stroke that reads from here re-colours on theme switch for free.
+ * Hardcoded hexes would have kept the dark-mode palette in light mode — where
+ * the dark emerald sits at roughly 1.9:1 against white and is unreadable.
+ */
 export const BAND_STYLES: Record<
   ScoreBand,
-  { text: string; bg: string; border: string; ring: string; hex: string; label: string }
+  {
+    text: string
+    bg: string
+    border: string
+    ring: string
+    css: string
+    glow: string
+    label: string
+  }
 > = {
   exceptional: {
     text: 'text-band-exceptional',
     bg: 'bg-band-exceptional/10',
     border: 'border-band-exceptional/25',
     ring: 'stroke-band-exceptional',
-    hex: '#34D399',
+    css: 'hsl(var(--band-exceptional))',
+    glow: 'hsl(var(--band-exceptional) / 0.35)',
     label: 'Exceptional',
   },
   strong: {
@@ -39,7 +56,8 @@ export const BAND_STYLES: Record<
     bg: 'bg-band-strong/10',
     border: 'border-band-strong/25',
     ring: 'stroke-band-strong',
-    hex: '#22D3EE',
+    css: 'hsl(var(--band-strong))',
+    glow: 'hsl(var(--band-strong) / 0.35)',
     label: 'Strong',
   },
   developing: {
@@ -47,7 +65,8 @@ export const BAND_STYLES: Record<
     bg: 'bg-band-developing/10',
     border: 'border-band-developing/25',
     ring: 'stroke-band-developing',
-    hex: '#FBBF24',
+    css: 'hsl(var(--band-developing))',
+    glow: 'hsl(var(--band-developing) / 0.35)',
     label: 'Developing',
   },
   emerging: {
@@ -55,7 +74,8 @@ export const BAND_STYLES: Record<
     bg: 'bg-band-emerging/10',
     border: 'border-band-emerging/25',
     ring: 'stroke-band-emerging',
-    hex: '#FB7185',
+    css: 'hsl(var(--band-emerging))',
+    glow: 'hsl(var(--band-emerging) / 0.35)',
     label: 'Emerging',
   },
 }

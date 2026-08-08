@@ -76,7 +76,7 @@ export function ScoreRing({
           r={radius}
           fill="none"
           strokeWidth={strokeWidth}
-          className="stroke-white/[0.07]"
+          className="stroke-tint/[0.07]"
         />
         <motion.circle
           cx={size / 2}
@@ -90,7 +90,7 @@ export function ScoreRing({
           initial={{ strokeDashoffset: animate ? circumference : circumference * (1 - clamped / 100) }}
           animate={{ strokeDashoffset: circumference * (1 - clamped / 100) }}
           transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-          style={{ filter: `drop-shadow(0 0 8px ${band.hex}40)` }}
+          style={{ filter: `drop-shadow(0 0 8px ${band.glow})` }}
         />
       </svg>
 
@@ -147,10 +147,10 @@ export function ScoreBar({
         <span className="text-sm font-medium text-ink">{label}</span>
         <span className={cn('nums text-sm font-semibold', band.text)}>{score}</span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.07]">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-tint/[0.07]">
         <motion.div
           className="h-full rounded-full"
-          style={{ backgroundColor: band.hex }}
+          style={{ backgroundColor: band.css }}
           initial={{ width: 0 }}
           animate={{ width: `${score}%` }}
           transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}

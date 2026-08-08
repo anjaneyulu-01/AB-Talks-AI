@@ -106,10 +106,10 @@ export function AnswerComposer({
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 px-3 pb-3">
             <div className="flex items-center gap-3 text-[0.6875rem] text-ink-faint">
               <span className="hidden items-center gap-1 sm:flex">
-                <kbd className="rounded border border-line-strong bg-white/[0.04] px-1 py-0.5 font-sans">
+                <kbd className="rounded border border-line-strong bg-tint/[0.04] px-1 py-0.5 font-sans">
                   ⌘
                 </kbd>
-                <kbd className="rounded border border-line-strong bg-white/[0.04] px-1 py-0.5 font-sans">
+                <kbd className="rounded border border-line-strong bg-tint/[0.04] px-1 py-0.5 font-sans">
                   ↵
                 </kbd>
                 to send
