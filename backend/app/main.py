@@ -154,7 +154,7 @@ async def root() -> dict:
     }
 
 
-@app.get("/healthz", include_in_schema=False)
+@app.api_route("/healthz", methods=["GET", "HEAD"], include_in_schema=False)
 async def healthz() -> dict:
     """Liveness probe for uptime monitors (UptimeRobot, Render, etc.).
 
@@ -163,5 +163,10 @@ async def healthz() -> dict:
     lives at ``{api_prefix}/v1/health`` -- that one can legitimately signal a
     degraded provider or a tripped breaker and must not be used for uptime
     pings, or a soft failover would page you at 3am.
+
+    HEAD is registered explicitly alongside GET: FastAPI's ``@app.get`` (unlike
+    plain Starlette) does NOT auto-add HEAD, and UptimeRobot's default probe is
+    a HEAD request -- without this it would get 405 and report the service down
+    while it is perfectly healthy.
     """
     return {"status": "ok"}
