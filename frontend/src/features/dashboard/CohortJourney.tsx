@@ -135,10 +135,21 @@ export function CohortJourney({
         })}
       </div>
 
-      <div className="flex items-center justify-between text-[0.625rem] text-ink-faint">
-        <span>Day 1</span>
-        <span>Day 31 · Capstone</span>
+      {/* A day number under every cell. Shares the exact flex structure of the
+          strip above (same gap, same `min-w-[5px] flex-1`), so each number sits
+          perfectly under its cell even as the strip flexes at 390px. Tiny and
+          faint — an axis, not a headline. */}
+      <div className="flex gap-[3px]" aria-hidden>
+        {Array.from({ length: COHORT_DAYS }, (_, i) => i + 1).map((day) => (
+          <span
+            key={day}
+            className="nums min-w-[5px] flex-1 text-center text-[0.5rem] leading-none tracking-[-0.03em] text-ink-faint"
+          >
+            {day}
+          </span>
+        ))}
       </div>
+      <p className="text-[0.625rem] text-ink-faint">Day 1 → Day 31 · Capstone</p>
 
       {/* Legend — the strip's colours are meaningful, so name them. */}
       <div className="flex flex-wrap gap-x-4 gap-y-1.5">
