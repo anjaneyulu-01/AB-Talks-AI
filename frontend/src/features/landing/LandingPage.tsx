@@ -1,40 +1,52 @@
 import { motion } from 'framer-motion'
-import {
-  ArrowRight,
-  Ban,
-  BrainCircuit,
-  FileCheck2,
-  Gauge,
-  GitBranch,
-  Layers,
-  Quote,
-  ShieldCheck,
-  Sparkles,
-  Target,
-  TrendingUp,
-} from 'lucide-react'
+import { ArrowRight, Ban, BrainCircuit, Quote, ShieldCheck } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Badge, Button, Card, Container } from '@/components/ui/primitives'
+import { Hero, ProofStrip } from '@/features/landing/Hero'
+import { DerivationStrip } from '@/features/landing/LiveDemo'
+import { StepFlow } from '@/features/landing/StepFlow'
+import { EASE_OUT, revealOnScroll, staggerContainer, staggerDelay } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-80px' },
-  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
-}
+/**
+ * Landing page.
+ *
+ * Rewritten because the previous version presented every section identically —
+ * eight cards across four grids. Uniform presentation reads as a template no
+ * matter how good the copy is, and gives the eye no reason to keep scrolling.
+ *
+ * The rhythm now alternates deliberately, and the ground colour changes with
+ * it so scrolling has a pulse:
+ *
+ *   hero          live demo of the mechanism
+ *   proof         thin bordered strip, dense real numbers
+ *   the gap       purely editorial — no cards at all
+ *   how it works  connected vertical flow, scroll-linked spine
+ *   fairness      asymmetric split; the one idea that earns a full stop
+ *   trust         three cards — used ONCE, so they still read as an accent
+ *   voices        offset quotes rather than a flat grid
+ *   cta           full-bleed close
+ *
+ * The other change that matters: the page now *shows* the mechanism in the
+ * hero instead of describing it. A still screenshot can assert that a mission
+ * record produces a question; only an animation can demonstrate it.
+ */
 
 export function LandingPage() {
   return (
     <div className="min-h-dvh bg-base">
       <Nav />
       <Hero />
-      <ProblemStatement />
+      <ProofStrip />
+      <TheGap />
       <HowItWorks />
-      <Differentiators />
-      <Testimonials />
+      <FairnessMoment />
+      <TrustSection />
+      <Voices />
       <FinalCta />
       <Footer />
     </div>
@@ -46,22 +58,16 @@ export function LandingPage() {
 function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-line/60 bg-base/70 backdrop-blur-xl">
-      <Container className="flex h-16 items-center justify-between">
+      <Container className="flex h-16 items-center justify-between gap-3">
         <Link to="/" className="flex min-w-0 items-center gap-2.5 rounded-lg">
           <Logo className="size-7 shrink-0" />
           <span className="truncate text-[0.9375rem] font-semibold tracking-tight text-ink">
-            ABTalks{' '}
-            <span className="font-normal text-ink-subtle">Interview</span>
+            ABTalks <span className="font-normal text-ink-subtle">Interview</span>
           </span>
         </Link>
+
         <div className="flex shrink-0 items-center gap-2">
-          {/* Secondary nav is dropped below `sm` — at 390px the logo plus two
-              buttons overflows, and the hero's own CTA already covers this. */}
-          <a href="#how-it-works" className="hidden sm:block">
-            <Button variant="ghost" size="sm">
-              How it works
-            </Button>
-          </a>
+          <ThemeToggle />
           <Link to="/dashboard">
             <Button variant="primary" size="sm">
               <span className="hidden sm:inline">Start an interview</span>
@@ -75,144 +81,299 @@ function Nav() {
   )
 }
 
-/* ------------------------------------------------------------------- Hero */
+/* -------------------------------------------------------------- Section head */
 
-function Hero() {
+function SectionHead({
+  eyebrow,
+  title,
+  lead,
+}: {
+  eyebrow: string
+  title: ReactNode
+  lead?: string
+}) {
   return (
-    <section className="relative overflow-hidden pt-16">
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-50" />
-        <div className="absolute -top-32 left-1/2 h-[36rem] w-[64rem] -translate-x-1/2 rounded-full bg-brand-600/[0.10] blur-[130px]" />
-        <div className="absolute right-[8%] top-40 size-72 rounded-full bg-accent-cyan/[0.06] blur-[100px]" />
-      </div>
+    <motion.div {...revealOnScroll} className="mx-auto max-w-2xl text-center">
+      <p className="eyebrow mb-4">{eyebrow}</p>
+      <h2 className="text-h1 text-gradient">{title}</h2>
+      {lead && <p className="mt-5 text-lead text-ink-muted">{lead}</p>}
+    </motion.div>
+  )
+}
 
-      <Container className="relative py-16 sm:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto max-w-3xl text-center"
-        >
-          <Badge tone="brand" size="md" className="mb-6">
-            <Sparkles className="size-3" />
-            Built for the ABTalks AI Cohort
-          </Badge>
+/* ------------------------------------------------------------------ The gap */
 
-          <h1 className="text-display text-gradient">
-            Find out if you're ready
-            <br />
-            <span className="text-gradient-brand">before it counts.</span>
-          </h1>
+/**
+ * Deliberately card-free. A purely editorial moment lets the eye rest between
+ * the dense demo above and the flow below, and lets the strongest sentence on
+ * the page carry itself without a box drawn around it.
+ */
+function TheGap() {
+  const points: [string, string][] = [
+    [
+      'Question banks are generic.',
+      'The same fifty questions for everyone, regardless of what you actually studied or how it went.',
+    ],
+    [
+      'Mock tools are static.',
+      'Difficulty never moves. You either get bored or you drown, and neither tells you where you stand.',
+    ],
+    [
+      'Automated scores are hollow.',
+      '"Communication: 7/10." No evidence, no examples, nothing you can act on tomorrow morning.',
+    ],
+  ]
 
-          <p className="mx-auto mt-6 max-w-2xl text-lead text-ink-muted">
-            An AI interviewer that has actually read your cohort record. It knows which
-            missions you aced, which took you five attempts, and which you skipped — and it
-            builds every question from that.
-          </p>
-
-          <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-9 sm:flex-row sm:items-center">
-            <Link to="/dashboard" className="sm:w-auto">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto">
-                Start your interview
-                <ArrowRight className="size-4" />
-              </Button>
-            </Link>
-            <a href="#how-it-works" className="sm:w-auto">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                See how it works
-              </Button>
-            </a>
-          </div>
-
-          <p className="mt-5 text-xs text-ink-faint">
-            No setup · Adapts in real time · Full report in under 20 minutes
-          </p>
+  return (
+    <section className="relative py-20 sm:py-28">
+      <Container>
+        <motion.div {...revealOnScroll} className="mx-auto max-w-3xl text-center">
+          <p className="eyebrow mb-5">The gap</p>
+          <h2 className="text-h1 text-gradient">
+            You finished the cohort.{' '}
+            <span className="text-ink-muted">
+              You still don't know if you're ready.
+            </span>
+          </h2>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mt-10 max-w-4xl sm:mt-16"
+          variants={staggerContainer(0.08)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          className="mx-auto mt-12 max-w-2xl space-y-5"
         >
-          <HeroPreview />
+          {points.map(([title, body], i) => (
+            <motion.div
+              key={title}
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: staggerDelay(i, 0.08), ease: EASE_OUT }}
+              className="border-l-2 border-line pl-5 sm:pl-6"
+            >
+              <p className="text-[0.9375rem] font-semibold text-ink">{title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-ink-muted">{body}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.p
+          {...revealOnScroll}
+          className="mx-auto mt-12 max-w-2xl text-center text-lead text-ink"
+        >
+          Nothing in between tells you whether you can explain <em>why</em> you chose
+          cosine similarity when a senior engineer pushes back.
+        </motion.p>
+      </Container>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------ How it works */
+
+function HowItWorks() {
+  return (
+    <section
+      id="how-it-works"
+      className="relative border-y border-line bg-surface/40 py-20 sm:py-28"
+    >
+      <Container>
+        <SectionHead eyebrow="How it works" title="Four steps. No black box." />
+
+        <div className="mt-14">
+          <StepFlow />
+        </div>
+
+        <motion.div {...revealOnScroll} className="mx-auto mt-12 max-w-3xl">
+          <DerivationStrip />
         </motion.div>
       </Container>
     </section>
   )
 }
 
+/* -------------------------------------------------------- Fairness moment */
+
 /**
- * Product preview.
- *
- * A real interview turn rather than a stock dashboard screenshot. The point it
- * has to land in five seconds is the "why this question" line — that is the
- * entire differentiator, so it gets the visual emphasis.
+ * The most human idea in the product gets a section to itself, as an
+ * asymmetric split rather than one card among three. Giving it equal visual
+ * weight to the other differentiators would bury the thing that actually
+ * earns trust.
  */
-function HeroPreview() {
+function FairnessMoment() {
+  const record = [
+    { day: 7, title: 'Embeddings Explained', attempts: 5 },
+    { day: 12, title: 'Prompt Engineering', attempts: 4 },
+    { day: 22, title: 'Multi-Agent Orchestration', attempts: 5 },
+    { day: 27, title: 'Security & Guardrails', attempts: null },
+    { day: 28, title: 'Docker & Kubernetes', attempts: null },
+  ]
+
   return (
-    <Card className="overflow-hidden p-0 shadow-float">
-      <div className="flex items-center gap-2 border-b border-line bg-surface-raised px-4 py-3">
-        <div className="flex gap-1.5">
-          <span className="size-2.5 rounded-full bg-tint/10" />
-          <span className="size-2.5 rounded-full bg-tint/10" />
-          <span className="size-2.5 rounded-full bg-tint/10" />
-        </div>
-        <div className="ml-3 flex items-center gap-2 text-xs text-ink-faint">
-          <span className="font-medium text-ink-subtle">Interview in progress</span>
-          <span>·</span>
-          <span>Turn 6 of 11</span>
-        </div>
-        <Badge tone="cyan" className="ml-auto">
-          Analytical
-        </Badge>
+    <section className="relative overflow-hidden py-20 sm:py-28">
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="absolute left-1/2 top-1/2 h-[24rem] w-[42rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600/[var(--glow-alpha)] blur-[120px]" />
       </div>
 
-      <div className="grid gap-0 sm:grid-cols-[1fr_15rem]">
-        <div className="space-y-4 p-6">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="flex items-center gap-1.5 rounded-md bg-band-exceptional/10 px-2 py-1 font-medium text-band-exceptional">
-              <GitBranch className="size-3" />
-              Going deeper
-            </span>
-            <span className="text-ink-faint">Day 10 · Retrieval &amp; Matching Engine</span>
-          </div>
-
-          <p className="rounded-xl border border-brand-500/20 bg-brand-500/[0.06] p-3 text-xs leading-relaxed text-brand-300">
-            <span className="font-semibold">Why this question: </span>
-            That was a strong answer, so I'm raising this to design level on the same topic
-            rather than moving on — I want to find your ceiling, not confirm your floor.
-          </p>
-
-          <p className="prose-interview">
-            Your router picks between SQL and vector search. Now imagine 60% of queries are
-            hybrid and latency budget is 300ms end to end. Where does that design break
-            first, and what would you change?
-          </p>
-
-          <div className="rounded-xl border border-line bg-base-200 p-3">
-            <p className="text-xs text-ink-faint">Your answer…</p>
-          </div>
-        </div>
-
-        <div className="space-y-4 border-t border-line p-5 sm:border-l sm:border-t-0">
-          <div>
-            <p className="eyebrow mb-2">Readiness</p>
-            <div className="flex items-baseline gap-1.5">
-              <span className="nums text-2xl font-bold text-band-strong">78</span>
-              <span className="flex items-center gap-0.5 text-xs font-medium text-band-exceptional">
-                <TrendingUp className="size-3" />
-                +6
-              </span>
+      <Container className="relative">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+          <motion.div {...revealOnScroll} className="text-left">
+            <Badge tone="neutral" size="md" className="mb-5">
+              <Ban className="size-3" />
+              The rule we won't break
+            </Badge>
+            <h2 className="text-h1 text-gradient">
+              It never asks about what you skipped.
+            </h2>
+            <div className="mt-6 space-y-4 text-[0.9375rem] leading-relaxed text-ink-muted">
+              <p>
+                Skipped a mission during the cohort? It's excluded from the question pool
+                entirely — enforced in code, not requested in a prompt. There's a test that
+                sweeps every candidate in the dataset to prove it can't happen.
+              </p>
+              <p className="text-ink">
+                Asking someone about material they never saw isn't rigour. It manufactures
+                a failure, and it destroys the trust the whole assessment depends on.
+              </p>
+              <p>
+                It still lands in your learning roadmap afterwards — that's the right place
+                for it. Same fact, opposite treatment, because the two contexts have
+                opposite ethics.
+              </p>
             </div>
-          </div>
-          <div className="space-y-2.5">
-            {[
-              ['Technical', 84],
-              ['Reasoning', 76],
-              ['Communication', 71],
-            ].map(([label, value]) => (
-              <div key={label as string} className="space-y-1">
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: EASE_OUT }}
+          >
+            <Card className="overflow-hidden">
+              <div className="border-b border-line px-5 py-3.5">
+                <p className="text-xs font-medium text-ink-subtle">
+                  Wendy Foster · Marketing Manager · 12 years
+                </p>
+              </div>
+
+              <div className="space-y-2 p-5">
+                {record.map((row, i) => {
+                  const skipped = row.attempts === null
+                  return (
+                    <motion.div
+                      key={row.day}
+                      initial={{ opacity: 0, x: 12 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.4,
+                        delay: 0.15 + i * 0.07,
+                        ease: EASE_OUT,
+                      }}
+                      className={cn(
+                        'flex items-center gap-3 rounded-xl border px-3 py-2.5',
+                        skipped
+                          ? 'border-dashed border-line-strong bg-tint/[0.02]'
+                          : 'border-line bg-tint/[0.02]',
+                      )}
+                    >
+                      <span className="nums w-8 shrink-0 text-xs text-ink-faint">
+                        D{row.day}
+                      </span>
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 truncate text-sm',
+                          skipped ? 'text-ink-faint line-through' : 'text-ink',
+                        )}
+                      >
+                        {row.title}
+                      </span>
+                      {skipped ? (
+                        <span className="flex shrink-0 items-center gap-1 rounded-md bg-tint/[0.05] px-2 py-0.5 text-[0.625rem] font-medium text-ink-subtle">
+                          <Ban className="size-2.5" />
+                          never asked
+                        </span>
+                      ) : (
+                        <span className="nums shrink-0 rounded-md bg-band-developing/10 px-2 py-0.5 text-[0.625rem] font-medium text-band-developing">
+                          ×{row.attempts}
+                        </span>
+                      )}
+                    </motion.div>
+                  )
+                })}
+              </div>
+
+              <div className="border-t border-line bg-tint/[0.02] px-5 py-3.5">
+                <p className="text-xs leading-relaxed text-ink-muted">
+                  Her interview covers the three she attempted — hard. The two she skipped
+                  appear only in her roadmap.
+                </p>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+/* ----------------------------------------------------------------- Trust */
+
+/** Cards appear exactly once on this page, so they still read as an accent. */
+function TrustSection() {
+  const items = [
+    {
+      icon: BrainCircuit,
+      accent: 'text-brand-400',
+      ring: 'border-brand-500/25 bg-brand-500/[0.05]',
+      title: 'Five attempts is the most useful signal',
+      body: 'A mission you cleared on the fifth try is the highest-value question in your interview — the one place nobody knows whether the understanding landed or the procedure was memorised.',
+      foot: (
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            ['1 attempt', 'text-band-exceptional bg-band-exceptional/10'],
+            ['2–3', 'text-band-strong bg-band-strong/10'],
+            ['4–5', 'text-band-developing bg-band-developing/10'],
+          ].map(([label, cls]) => (
+            <span
+              key={label}
+              className={cn('rounded-md px-2 py-1 text-[0.6875rem] font-medium', cls)}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      icon: ShieldCheck,
+      accent: 'text-accent-cyan',
+      ring: 'border-accent-cyan/25 bg-accent-cyan/[0.05]',
+      title: 'The interview cannot break',
+      body: 'Groq is primary. If it times out or rate-limits, Gemini takes over mid-sentence and you never notice. If both are down, a deterministic strategist keeps your session alive.',
+      foot: (
+        <div className="flex items-center gap-2 rounded-lg border border-line bg-tint/[0.03] p-2.5 text-xs">
+          <span className="font-medium text-ink">Groq</span>
+          <ArrowRight className="size-3 text-ink-faint" />
+          <span className="text-ink-muted">Gemini</span>
+          <ArrowRight className="size-3 text-ink-faint" />
+          <span className="text-ink-subtle">Local</span>
+        </div>
+      ),
+    },
+    {
+      icon: Quote,
+      accent: 'text-band-exceptional',
+      ring: 'border-band-exceptional/25 bg-band-exceptional/[0.05]',
+      title: 'Every score shows its working',
+      body: 'Scores are a weighted average over the turns that actually measured each competency — computed in code, not guessed by a model at the end. The report links every number to the answer behind it.',
+      foot: (
+        <div className="space-y-1.5">
+          {([['Technical Knowledge', 84], ['Reasoning', 71]] as [string, number][]).map(
+            ([label, value]) => (
+              <div key={label} className="space-y-1">
                 <div className="flex justify-between text-[0.6875rem]">
                   <span className="text-ink-subtle">{label}</span>
                   <span className="nums text-ink-muted">{value}</span>
@@ -224,135 +385,41 @@ function HeroPreview() {
                   />
                 </div>
               </div>
-            ))}
-          </div>
+            ),
+          )}
         </div>
-      </div>
-    </Card>
-  )
-}
+      ),
+    },
+  ]
 
-/* -------------------------------------------------------- Problem section */
-
-function ProblemStatement() {
   return (
-    <section className="relative border-y border-line bg-surface/30 py-14 sm:py-20">
+    <section className="relative border-y border-line bg-surface/40 py-20 sm:py-28">
       <Container>
-        <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-          <p className="eyebrow mb-4">The gap</p>
-          <h2 className="text-h1 text-gradient">
-            You finished the cohort. You still don't know if you're ready.
-          </h2>
-          <p className="mt-5 text-lead text-ink-muted">
-            Completion certificates measure attendance. Interviews measure thinking. Nothing
-            in between tells you whether you can explain <em>why</em> you chose cosine
-            similarity when a senior engineer pushes back.
-          </p>
-        </motion.div>
+        <SectionHead eyebrow="Why it's trustworthy" title="Three decisions you can feel" />
 
-        <div className="mx-auto mt-10 grid max-w-4xl gap-3 sm:mt-14 sm:gap-4 sm:grid-cols-3">
-          {[
-            {
-              icon: Target,
-              stat: 'Generic',
-              label: 'Practice question banks',
-              body: 'The same 50 questions for everyone, regardless of what you actually studied or how well it went.',
-            },
-            {
-              icon: Gauge,
-              stat: 'Static',
-              label: 'Mock interview tools',
-              body: "Difficulty never moves. You either get bored or you drown, and neither tells you where you stand.",
-            },
-            {
-              icon: FileCheck2,
-              stat: 'Hollow',
-              label: 'Automated scoring',
-              body: '"Communication: 7/10." No evidence, no examples, nothing you can act on tomorrow morning.',
-            },
-          ].map((item, i) => (
-            <motion.div key={item.label} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
-              <Card className="h-full p-6">
-                <item.icon className="size-5 text-ink-faint" />
-                <p className="mt-4 text-lg font-semibold text-ink">{item.stat}</p>
-                <p className="text-xs font-medium uppercase tracking-wide text-ink-subtle">
-                  {item.label}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-ink-muted">{item.body}</p>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </Container>
-    </section>
-  )
-}
-
-/* --------------------------------------------------------- How it works */
-
-const STEPS = [
-  {
-    n: '01',
-    icon: Layers,
-    title: 'It reads your record first',
-    body: 'Before a single question, the system reads all 31 days of your cohort history and builds an evidence profile: what you mastered first try, what took five attempts, what you never touched.',
-    detail: 'Deterministic — no model involved yet',
-  },
-  {
-    n: '02',
-    icon: Target,
-    title: 'It plans your interview',
-    body: 'Topics are allocated to question slots before you start, each bound to a real curriculum day and objective. That is why it never repeats itself and never drifts off-syllabus.',
-    detail: 'Guaranteed coverage across six competencies',
-  },
-  {
-    n: '03',
-    icon: BrainCircuit,
-    title: 'It adapts as you answer',
-    body: 'A strong answer earns a harder question on the same topic. An incomplete one earns a targeted follow-up on exactly what you missed. Two weak turns and it moves on rather than grinding you down.',
-    detail: 'And it tells you why, every time',
-  },
-  {
-    n: '04',
-    icon: FileCheck2,
-    title: 'You get evidence, not a vibe',
-    body: 'Every score traces back to the turn that produced it. Every gap comes with the curriculum day that closes it. The numbers are computed from your answers, not guessed at the end.',
-    detail: 'Auditable, exportable, actionable',
-  },
-]
-
-function HowItWorks() {
-  return (
-    <section id="how-it-works" className="relative py-16 sm:py-24">
-      <Container>
-        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow mb-4">How it works</p>
-          <h2 className="text-h1 text-gradient">Four steps. No black box.</h2>
-        </motion.div>
-
-        <div className="mx-auto mt-10 max-w-4xl space-y-3 sm:mt-14">
-          {STEPS.map((step, i) => (
-            <motion.div key={step.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.07 }}>
-              <Card hover className="group grid gap-5 p-6 sm:grid-cols-[auto_1fr] sm:p-7">
-                <div className="flex items-start gap-4">
+        <div className="mt-14 grid gap-4 lg:grid-cols-3">
+          {items.map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: staggerDelay(i, 0.09), ease: EASE_OUT }}
+            >
+              <Card hover className="flex h-full flex-col">
+                <div className="p-6 pb-4">
                   <div
                     className={cn(
-                      'flex size-11 shrink-0 items-center justify-center rounded-xl',
-                      'border border-line-strong bg-surface-raised text-brand-400',
-                      'transition-colors duration-300 group-hover:border-brand-500/40 group-hover:text-brand-300',
+                      'mb-4 flex size-10 items-center justify-center rounded-xl border',
+                      item.ring,
                     )}
                   >
-                    <step.icon className="size-5" />
+                    <item.icon className={cn('size-5', item.accent)} />
                   </div>
+                  <h3 className="text-h3 text-ink">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-muted">{item.body}</p>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-baseline gap-3">
-                    <span className="nums text-xs font-semibold text-ink-faint">{step.n}</span>
-                    <h3 className="text-h3 text-ink">{step.title}</h3>
-                  </div>
-                  <p className="max-w-2xl text-sm leading-relaxed text-ink-muted">{step.body}</p>
-                  <p className="pt-1 text-xs font-medium text-brand-400">{step.detail}</p>
-                </div>
+                <div className="mt-auto p-6 pt-0">{item.foot}</div>
               </Card>
             </motion.div>
           ))}
@@ -362,109 +429,9 @@ function HowItWorks() {
   )
 }
 
-/* ------------------------------------------------------- Differentiators */
+/* ---------------------------------------------------------------- Voices */
 
-function Differentiators() {
-  return (
-    <section className="relative border-y border-line bg-surface/30 py-16 sm:py-24">
-      <Container>
-        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow mb-4">What makes it different</p>
-          <h2 className="text-h1 text-gradient">Three decisions you can feel</h2>
-        </motion.div>
-
-        <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 lg:grid-cols-3">
-          <motion.div {...fadeUp}>
-            <Card className="h-full overflow-hidden">
-              <div className="border-b border-line bg-band-emerging/[0.04] p-6">
-                <Ban className="size-5 text-band-emerging" />
-                <h3 className="mt-4 text-h3 text-ink">It never asks about what you skipped</h3>
-              </div>
-              <div className="space-y-4 p-6">
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  Skipped a mission? It's excluded from the question pool entirely — enforced
-                  in code, not requested in a prompt.
-                </p>
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  Asking about material you never saw isn't rigour. It manufactures a failure
-                  and destroys the trust the whole thing depends on.
-                </p>
-                <div className="rounded-lg border border-line bg-base-200 p-3">
-                  <p className="text-xs text-ink-subtle">
-                    It still lands in your <span className="text-ink">learning roadmap</span> —
-                    just never as an interview question.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>
-            <Card className="h-full overflow-hidden">
-              <div className="border-b border-line bg-brand-500/[0.05] p-6">
-                <BrainCircuit className="size-5 text-brand-400" />
-                <h3 className="mt-4 text-h3 text-ink">Five attempts is the most useful signal</h3>
-              </div>
-              <div className="space-y-4 p-6">
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  A mission you cleared on the fifth try is the highest-value question in your
-                  interview. It's the one place nobody knows whether the understanding landed
-                  or the procedure was memorised.
-                </p>
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  So that's where it probes hardest — warmly, and at the level underneath the
-                  surface.
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    ['1 attempt', 'text-band-exceptional bg-band-exceptional/10'],
-                    ['2–3', 'text-band-strong bg-band-strong/10'],
-                    ['4–5', 'text-band-developing bg-band-developing/10'],
-                  ].map(([label, cls]) => (
-                    <span key={label} className={cn('rounded-md px-2 py-1 text-[0.6875rem] font-medium', cls)}>
-                      {label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.16 }}>
-            <Card className="h-full overflow-hidden">
-              <div className="border-b border-line bg-accent-cyan/[0.05] p-6">
-                <ShieldCheck className="size-5 text-accent-cyan" />
-                <h3 className="mt-4 text-h3 text-ink">The interview can't break</h3>
-              </div>
-              <div className="space-y-4 p-6">
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  Grok is primary. If it times out or rate-limits, Gemini takes over
-                  mid-sentence and you never notice. If both are down, a deterministic
-                  strategist keeps your session alive.
-                </p>
-                <p className="text-sm leading-relaxed text-ink-muted">
-                  The interview policy is plain Python — so it stays coherent no matter which
-                  model is answering.
-                </p>
-                <div className="flex items-center gap-2 rounded-lg border border-line bg-base-200 p-3 text-xs">
-                  <span className="text-ink">Grok</span>
-                  <ArrowRight className="size-3 text-ink-faint" />
-                  <span className="text-ink-muted">Gemini</span>
-                  <ArrowRight className="size-3 text-ink-faint" />
-                  <span className="text-ink-subtle">Local</span>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-      </Container>
-    </section>
-  )
-}
-
-/* ----------------------------------------------------------- Testimonials */
-
-const TESTIMONIALS = [
+const VOICES = [
   {
     quote:
       "It asked me why I picked 500-token chunks. I'd never actually thought about it — I'd copied it from the notebook. That one question was worth more than a week of revision.",
@@ -474,7 +441,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Twenty-eight years in and I was nervous it'd make me feel old. Instead it noticed I was fluent on systems and new to agents, and built the whole interview around that. Genuinely impressive.",
+      'Twenty-eight years in and I was braced for it to make me feel old. Instead it noticed I was fluent on systems and new to agents, and built the whole interview around that.',
     name: 'Harold Whitfield',
     role: 'Distinguished Engineer · 28 years',
     score: 81,
@@ -488,45 +455,59 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Every mission took me four or five tries. I assumed the report would say I was hopeless. It said I had the highest persistence in the cohort and told me exactly what to tighten.",
+      'Every mission took me four or five tries. I assumed the report would say I was hopeless. It said I had the highest persistence in the cohort and told me exactly what to tighten.',
     name: 'Tyler Brooks',
     role: 'Junior Developer · Bootcamp',
     score: 68,
   },
 ]
 
-function Testimonials() {
+/** Offset columns rather than a flat grid — reads as editorial, not tabular. */
+function Voices() {
   return (
-    <section className="relative py-16 sm:py-24">
+    <section className="relative py-20 sm:py-28">
       <Container>
-        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow mb-4">From the cohort</p>
-          <h2 className="text-h1 text-gradient">What it feels like on the other side</h2>
-        </motion.div>
+        <SectionHead
+          eyebrow="From the cohort"
+          title="What it feels like on the other side"
+        />
 
-        <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 sm:grid-cols-2">
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div key={t.name} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }}>
-              <Card hover className="flex h-full flex-col gap-5 p-6">
-                <Quote className="size-5 shrink-0 text-brand-500/40" />
-                <p className="flex-1 text-[0.9375rem] leading-relaxed text-ink/90">"{t.quote}"</p>
-                <div className="flex items-center justify-between gap-4 border-t border-line pt-4">
-                  <div>
-                    <p className="text-sm font-medium text-ink">{t.name}</p>
-                    <p className="text-xs text-ink-subtle">{t.role}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="nums text-lg font-semibold text-band-strong">{t.score}</p>
-                    <p className="text-[0.6875rem] text-ink-faint">readiness</p>
-                  </div>
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:gap-5">
+          {VOICES.map((v, i) => (
+            <motion.figure
+              key={v.name}
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.55, delay: staggerDelay(i, 0.07), ease: EASE_OUT }}
+              className={cn(
+                'flex h-full flex-col gap-5 rounded-2xl border border-line bg-surface p-6 shadow-soft',
+                'transition-all duration-400 ease-premium hover:-translate-y-0.5 hover:shadow-raised',
+                // A half-step offset on the second column breaks the grid's
+                // regularity without losing alignment.
+                i % 2 === 1 && 'sm:mt-8',
+              )}
+            >
+              <Quote className="size-5 shrink-0 text-brand-500/40" />
+              <blockquote className="flex-1 text-[0.9375rem] leading-relaxed text-ink/90">
+                {v.quote}
+              </blockquote>
+              <figcaption className="flex items-center justify-between gap-4 border-t border-line pt-4">
+                <div>
+                  <p className="text-sm font-medium text-ink">{v.name}</p>
+                  <p className="text-xs text-ink-subtle">{v.role}</p>
                 </div>
-              </Card>
-            </motion.div>
+                <div className="text-right">
+                  <p className="nums text-lg font-semibold text-band-strong">{v.score}</p>
+                  <p className="text-[0.6875rem] text-ink-faint">readiness</p>
+                </div>
+              </figcaption>
+            </motion.figure>
           ))}
         </div>
 
-        <p className="mt-8 text-center text-xs text-ink-faint">
-          Illustrative scenarios based on the ABTalks cohort dataset.
+        <p className="mt-10 text-center text-xs text-ink-faint">
+          Illustrative scenarios built from the ABTalks cohort dataset.
         </p>
       </Container>
     </section>
@@ -537,26 +518,35 @@ function Testimonials() {
 
 function FinalCta() {
   return (
-    <section className="relative overflow-hidden py-16 sm:py-24">
+    <section className="relative overflow-hidden py-20 sm:py-28">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute left-1/2 top-1/2 h-96 w-[48rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600/[0.10] blur-[110px]" />
+        <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-50" />
+        <div className="absolute left-1/2 top-1/2 h-96 w-[48rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600/[var(--glow-alpha)] blur-[110px]" />
       </div>
+
       <Container className="relative">
-        <motion.div {...fadeUp}>
-          <Card className="overflow-hidden bg-brand-sheen p-7 text-center sm:p-16">
-            <Logo className="mx-auto size-11" />
-            <h2 className="mt-6 text-h1 text-gradient">One interview. A real answer.</h2>
-            <p className="mx-auto mt-4 max-w-xl text-lead text-ink-muted">
-              Twenty minutes, and you'll know exactly where you stand and exactly what to do
-              next. Nothing to install, nothing to configure.
-            </p>
-            <Link to="/dashboard" className="mt-8 inline-block">
-              <Button variant="primary" size="lg">
-                Choose your profile
-                <ArrowRight className="size-4" />
-              </Button>
-            </Link>
-          </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6, ease: EASE_OUT }}
+          className="mx-auto max-w-2xl text-center"
+        >
+          <Logo className="mx-auto size-12" />
+          <h2 className="mt-6 text-h1 text-gradient">One interview. A real answer.</h2>
+          <p className="mx-auto mt-5 text-lead text-ink-muted">
+            Twenty minutes, and you'll know exactly where you stand and exactly what to do
+            next. Nothing to install, nothing to configure.
+          </p>
+          <Link to="/dashboard" className="mt-8 inline-block">
+            <Button variant="primary" size="lg">
+              Choose your profile
+              <ArrowRight className="size-4" />
+            </Button>
+          </Link>
+          <p className="mt-4 text-xs text-ink-faint">
+            20 cohort profiles · no sign-up · runs without API keys
+          </p>
         </motion.div>
       </Container>
     </section>
@@ -571,7 +561,7 @@ function Footer() {
           <Logo className="size-6" />
           <span className="text-sm text-ink-subtle">ABTalks Interview Intelligence</span>
         </div>
-        <p className="text-xs text-ink-faint">
+        <p className="text-center text-xs text-ink-faint sm:text-right">
           Built for the ABTalks AI Hackathon · Grounded in the 31-day AI Cohort
         </p>
       </Container>
