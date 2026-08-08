@@ -111,8 +111,10 @@ export function DashboardPage() {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 rounded-xl border border-line bg-surface p-1">
-          <SlidersHorizontal className="ml-2 size-3.5 text-ink-faint" />
+        {/* Full-width segmented control on mobile so each option is a
+            comfortable tap target rather than three cramped pills. */}
+        <div className="flex items-center gap-1 rounded-xl border border-line bg-surface p-1">
+          <SlidersHorizontal className="ml-1.5 size-3.5 shrink-0 text-ink-faint sm:ml-2" />
           {(
             [
               ['name', 'Name'],
@@ -123,8 +125,9 @@ export function DashboardPage() {
             <button
               key={key}
               onClick={() => setSort(key)}
+              aria-pressed={sort === key}
               className={cn(
-                'rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                'flex-1 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors sm:flex-none sm:py-1.5',
                 sort === key
                   ? 'bg-white/[0.08] text-ink'
                   : 'text-ink-subtle hover:text-ink-muted',

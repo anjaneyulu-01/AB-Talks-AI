@@ -2,7 +2,19 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      `viewport-fit=cover` is required for `env(safe-area-inset-*)` to return
+      anything other than 0. Without it the composer's safe-area padding is a
+      no-op and the send button sits under the iPhone home indicator.
+
+      Deliberately no `maximum-scale` or `user-scalable=no`: blocking pinch-zoom
+      is an accessibility failure, and the 16px input rule already prevents the
+      unwanted auto-zoom that people usually reach for those to suppress.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <meta name="color-scheme" content="dark" />
     <title>ABTalks · Interview Intelligence</title>
     <meta

@@ -16,7 +16,7 @@ export function AppShell() {
   const location = useLocation()
 
   return (
-    <div className="relative min-h-screen bg-base">
+    <div className="relative min-h-dvh bg-base">
       {/* Ambient background. Fixed and masked so it never scrolls into a hard
           edge or competes with content for attention. */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
@@ -25,20 +25,21 @@ export function AppShell() {
       </div>
 
       <header className="sticky top-0 z-40 border-b border-line bg-base/80 backdrop-blur-xl">
-        <Container className="flex h-16 items-center justify-between gap-6">
-          <Link to="/" className="flex items-center gap-2.5 rounded-lg">
-            <Logo className="size-7" />
-            <div className="flex items-baseline gap-1.5">
+        <Container className="flex h-16 items-center justify-between gap-3">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5 rounded-lg">
+            <Logo className="size-7 shrink-0" />
+            <div className="flex min-w-0 items-baseline gap-1.5">
               <span className="text-[0.9375rem] font-semibold tracking-tight text-ink">
                 ABTalks
               </span>
-              <span className="text-[0.9375rem] font-normal tracking-tight text-ink-subtle">
+              {/* Dropped below `sm` so the nav and status pill always fit. */}
+              <span className="hidden text-[0.9375rem] font-normal tracking-tight text-ink-subtle sm:inline">
                 Interview
               </span>
             </div>
           </Link>
 
-          <nav className="flex items-center gap-1">
+          <nav className="flex shrink-0 items-center gap-1">
             {NAV.map(({ to, label, icon: Icon }) => {
               const active =
                 to === '/dashboard'
@@ -57,8 +58,8 @@ export function AppShell() {
                       : 'text-ink-subtle hover:bg-white/[0.04] hover:text-ink-muted',
                   )}
                 >
-                  <Icon className="size-4" />
-                  {label}
+                  <Icon className="size-4 shrink-0" />
+                  <span className="hidden sm:inline">{label}</span>
                 </NavLink>
               )
             })}

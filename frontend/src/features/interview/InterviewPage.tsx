@@ -4,10 +4,15 @@ import { ArrowLeft, FileText, Loader2, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
+import { BottomSheet } from '@/components/ui/BottomSheet'
 import { Logo } from '@/components/ui/Logo'
 import { Button, EmptyState, Skeleton } from '@/components/ui/primitives'
 import { AnswerComposer } from '@/features/interview/AnswerComposer'
-import { InterviewRail } from '@/features/interview/InterviewRail'
+import {
+  InterviewRail,
+  MobileStatStrip,
+  RailContent,
+} from '@/features/interview/InterviewRail'
 import { InterviewTopBar } from '@/features/interview/InterviewTopBar'
 import { ThinkingIndicator } from '@/features/interview/ThinkingIndicator'
 import { TranscriptTurn } from '@/features/interview/TranscriptTurn'
@@ -21,6 +26,7 @@ export function InterviewPage() {
 
   const [draft, setDraft] = useState('')
   const [elapsed, setElapsed] = useState(0)
+  const [railOpen, setRailOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -82,7 +88,7 @@ export function InterviewPage() {
 
   if (isError || !state) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-base p-6">
+      <div className="flex min-h-dvh items-center justify-center bg-base p-6">
         <EmptyState
           className="max-w-md"
           icon={<X className="size-5" />}
@@ -108,14 +114,18 @@ export function InterviewPage() {
   const messages = state.messages as TranscriptMessage[]
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-base">
+    // `h-dvh` not `h-screen`: on mobile, 100vh excludes browser chrome and the
+    // on-screen keyboard, so the composer ends up below the fold exactly when
+    // someone is trying to type into it.
+    <div className="flex h-dvh flex-col overflow-hidden bg-base">
       <InterviewTopBar state={state} elapsed={elapsed} />
+      <MobileStatStrip state={state} onOpen={() => setRailOpen(true)} />
 
       <div className="flex min-h-0 flex-1">
         {/* -------------------------------------------------- Conversation */}
         <div className="flex min-w-0 flex-1 flex-col">
           <div ref={scrollRef} className="flex-1 overflow-y-auto scroll-smooth">
-            <div className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8">
+            <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
               <AnimatePresence initial={false}>
                 {messages.map((message, i) => (
                   <TranscriptTurn
@@ -157,6 +167,15 @@ export function InterviewPage() {
         {/* ---------------------------------------------------------- Rail */}
         <InterviewRail state={state} />
       </div>
+
+      {/* Same content as the desktop rail, relocated rather than deleted. */}
+      <BottomSheet
+        open={railOpen}
+        onClose={() => setRailOpen(false)}
+        title="Your progress"
+      >
+        <RailContent state={state} />
+      </BottomSheet>
     </div>
   )
 }
@@ -194,7 +213,7 @@ function CompletionCard({ sessionId }: { sessionId: string }) {
 
 function InterviewSkeleton() {
   return (
-    <div className="flex h-screen flex-col bg-base">
+    <div className="flex h-dvh flex-col bg-base">
       <div className="flex h-14 items-center gap-4 border-b border-line px-6">
         <Skeleton className="size-7 rounded-lg" />
         <Skeleton className="h-3 w-40" />

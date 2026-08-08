@@ -22,6 +22,33 @@
     @apply bg-base text-ink font-sans antialiased;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
+
+    /* Nothing may scroll the page sideways. A single overflowing element on a
+       390px screen makes the whole product feel broken, and it is the most
+       common way a desktop-designed layout fails on a phone. */
+    overflow-x: hidden;
+  }
+
+  /* iOS zooms the viewport when a focused input's font-size is below 16px.
+     That yanks the layout mid-answer and is jarring enough to lose someone's
+     train of thought — which on an interview screen is the whole product.
+     Enforced globally rather than per-component so it cannot be forgotten. */
+  @media (max-width: 640px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Comfortable tap targets. 44px is Apple's guideline and roughly the width
+     of an adult fingertip; below it, mis-taps rise sharply. */
+  @media (pointer: coarse) {
+    button,
+    a[role='button'],
+    [role='tab'] {
+      min-height: 44px;
+    }
   }
 
   /* Visible, branded, and never removed. Keyboard users get the same quality
@@ -133,6 +160,30 @@
 }
 
 @layer utilities {
+  /* Dynamic viewport height.
+     `100vh` on mobile browsers is the height *without* browser chrome, so a
+     `h-screen` column is taller than the visible area — the composer sits
+     below the fold and the on-screen keyboard hides it entirely. `100dvh`
+     tracks the actually-visible viewport as chrome and keyboard appear.
+     `vh` first as the fallback for anything that lacks dvh. */
+  .h-dvh {
+    height: 100vh;
+    height: 100dvh;
+  }
+  .min-h-dvh {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Respect notches and home indicators. Without this the composer's send
+     button sits under the iPhone home bar and is genuinely hard to press. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
   .text-gradient {
     @apply bg-gradient-to-br from-ink via-ink to-ink-muted bg-clip-text text-transparent;
   }

@@ -134,8 +134,13 @@ function ReportHeader({ report }: { report: FeedbackReport }) {
       </Link>
 
       <Card className="overflow-hidden">
-        <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[auto_1fr_auto] lg:items-center">
-          <ScoreRing score={report.overall_score} size={148} label="Readiness" />
+        <div className="grid gap-6 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[auto_1fr_auto] lg:items-center">
+          {/* Centred on mobile so the score reads as the headline it is;
+              left-anchored on desktop where it sits beside the summary. */}
+          <div className="flex justify-center lg:block">
+            <ScoreRing score={report.overall_score} size={132} label="Readiness" className="sm:hidden" />
+            <ScoreRing score={report.overall_score} size={148} label="Readiness" className="hidden sm:inline-flex" />
+          </div>
 
           <div className="min-w-0 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -163,17 +168,19 @@ function ReportHeader({ report }: { report: FeedbackReport }) {
             </p>
           </div>
 
-          <div className="flex flex-row gap-2 lg:flex-col no-print">
+          {/* Equal-width row on mobile so all three are comfortably tappable;
+              a stacked column on desktop where vertical space is free. */}
+          <div className="grid grid-cols-3 gap-2 lg:flex lg:flex-col no-print">
             <Button variant="secondary" size="sm" onClick={() => window.print()}>
               <Download className="size-3.5" />
-              Download PDF
+              <span className="hidden sm:inline">Download </span>PDF
             </Button>
             <Button variant="ghost" size="sm" onClick={share}>
               {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
               {copied ? 'Copied' : 'Share'}
             </Button>
-            <Link to={`/candidates/${report.candidate_id}`} className="contents">
-              <Button variant="ghost" size="sm">
+            <Link to={`/candidates/${report.candidate_id}`}>
+              <Button variant="ghost" size="sm" className="w-full">
                 <TrendingUp className="size-3.5" />
                 Retry
               </Button>
@@ -298,8 +305,45 @@ function TopicsTable({ report }: { report: FeedbackReport }) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="-mx-2 overflow-x-auto">
-            <table className="w-full min-w-[34rem] border-collapse">
+          {/* Mobile: cards. A five-column table at 390px either scrolls
+              sideways or crushes every column to unreadable width — and this
+              is the audit trail, the part a candidate most needs to actually
+              read. */}
+          <div className="space-y-2 sm:hidden">
+            {report.topics_covered.map((topic) => {
+              const band = bandStyle(topic.score)
+              return (
+                <div
+                  key={topic.turn}
+                  className="rounded-xl border border-line bg-base-200/60 p-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium leading-snug text-ink">
+                        {topic.title}
+                      </p>
+                      <p className="nums mt-0.5 text-[0.6875rem] text-ink-faint">
+                        Turn {topic.turn} · Day {topic.day}
+                      </p>
+                    </div>
+                    <span className={cn('nums shrink-0 text-lg font-bold', band.text)}>
+                      {topic.score}
+                    </span>
+                  </div>
+                  <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                    <Badge tone="outline">{topic.difficulty}</Badge>
+                    <span className="text-[0.6875rem] text-ink-subtle">
+                      {topic.competency}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Desktop: the table, where the density is an asset. */}
+          <div className="-mx-2 hidden overflow-x-auto sm:block">
+            <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-line text-left">
                   {['Turn', 'Topic', 'Level', 'Measured', 'Score'].map((h) => (

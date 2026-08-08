@@ -28,7 +28,7 @@ const fadeUp = {
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-base">
+    <div className="min-h-dvh bg-base">
       <Nav />
       <Hero />
       <ProblemStatement />
@@ -47,21 +47,25 @@ function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-line/60 bg-base/70 backdrop-blur-xl">
       <Container className="flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 rounded-lg">
-          <Logo className="size-7" />
-          <span className="text-[0.9375rem] font-semibold tracking-tight text-ink">
-            ABTalks <span className="font-normal text-ink-subtle">Interview</span>
+        <Link to="/" className="flex min-w-0 items-center gap-2.5 rounded-lg">
+          <Logo className="size-7 shrink-0" />
+          <span className="truncate text-[0.9375rem] font-semibold tracking-tight text-ink">
+            ABTalks{' '}
+            <span className="font-normal text-ink-subtle">Interview</span>
           </span>
         </Link>
-        <div className="flex items-center gap-2">
-          <a href="#how-it-works">
+        <div className="flex shrink-0 items-center gap-2">
+          {/* Secondary nav is dropped below `sm` — at 390px the logo plus two
+              buttons overflows, and the hero's own CTA already covers this. */}
+          <a href="#how-it-works" className="hidden sm:block">
             <Button variant="ghost" size="sm">
               How it works
             </Button>
           </a>
           <Link to="/dashboard">
             <Button variant="primary" size="sm">
-              Start an interview
+              <span className="hidden sm:inline">Start an interview</span>
+              <span className="sm:hidden">Start</span>
               <ArrowRight className="size-3.5" />
             </Button>
           </Link>
@@ -82,7 +86,7 @@ function Hero() {
         <div className="absolute right-[8%] top-40 size-72 rounded-full bg-accent-cyan/[0.06] blur-[100px]" />
       </div>
 
-      <Container className="relative py-24 sm:py-32">
+      <Container className="relative py-16 sm:py-32">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -106,14 +110,14 @@ function Hero() {
             builds every question from that.
           </p>
 
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/dashboard">
+          <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-9 sm:flex-row sm:items-center">
+            <Link to="/dashboard" className="sm:w-auto">
               <Button variant="primary" size="lg" className="w-full sm:w-auto">
                 Start your interview
                 <ArrowRight className="size-4" />
               </Button>
             </Link>
-            <a href="#how-it-works">
+            <a href="#how-it-works" className="sm:w-auto">
               <Button variant="secondary" size="lg" className="w-full sm:w-auto">
                 See how it works
               </Button>
@@ -129,7 +133,7 @@ function Hero() {
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mt-16 max-w-4xl"
+          className="mx-auto mt-10 max-w-4xl sm:mt-16"
         >
           <HeroPreview />
         </motion.div>
@@ -232,7 +236,7 @@ function HeroPreview() {
 
 function ProblemStatement() {
   return (
-    <section className="relative border-y border-line bg-surface/30 py-20">
+    <section className="relative border-y border-line bg-surface/30 py-14 sm:py-20">
       <Container>
         <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
           <p className="eyebrow mb-4">The gap</p>
@@ -246,7 +250,7 @@ function ProblemStatement() {
           </p>
         </motion.div>
 
-        <div className="mx-auto mt-14 grid max-w-4xl gap-4 sm:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-4xl gap-3 sm:mt-14 sm:gap-4 sm:grid-cols-3">
           {[
             {
               icon: Target,
@@ -319,14 +323,14 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative py-24">
+    <section id="how-it-works" className="relative py-16 sm:py-24">
       <Container>
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
           <p className="eyebrow mb-4">How it works</p>
           <h2 className="text-h1 text-gradient">Four steps. No black box.</h2>
         </motion.div>
 
-        <div className="mx-auto mt-14 max-w-4xl space-y-3">
+        <div className="mx-auto mt-10 max-w-4xl space-y-3 sm:mt-14">
           {STEPS.map((step, i) => (
             <motion.div key={step.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.07 }}>
               <Card hover className="group grid gap-5 p-6 sm:grid-cols-[auto_1fr] sm:p-7">
@@ -362,14 +366,14 @@ function HowItWorks() {
 
 function Differentiators() {
   return (
-    <section className="relative border-y border-line bg-surface/30 py-24">
+    <section className="relative border-y border-line bg-surface/30 py-16 sm:py-24">
       <Container>
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
           <p className="eyebrow mb-4">What makes it different</p>
           <h2 className="text-h1 text-gradient">Three decisions you can feel</h2>
         </motion.div>
 
-        <div className="mt-14 grid gap-4 lg:grid-cols-3">
+        <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 lg:grid-cols-3">
           <motion.div {...fadeUp}>
             <Card className="h-full overflow-hidden">
               <div className="border-b border-line bg-band-emerging/[0.04] p-6">
@@ -493,14 +497,14 @@ const TESTIMONIALS = [
 
 function Testimonials() {
   return (
-    <section className="relative py-24">
+    <section className="relative py-16 sm:py-24">
       <Container>
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
           <p className="eyebrow mb-4">From the cohort</p>
           <h2 className="text-h1 text-gradient">What it feels like on the other side</h2>
         </motion.div>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2">
+        <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 sm:grid-cols-2">
           {TESTIMONIALS.map((t, i) => (
             <motion.div key={t.name} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }}>
               <Card hover className="flex h-full flex-col gap-5 p-6">
@@ -533,13 +537,13 @@ function Testimonials() {
 
 function FinalCta() {
   return (
-    <section className="relative overflow-hidden py-24">
+    <section className="relative overflow-hidden py-16 sm:py-24">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute left-1/2 top-1/2 h-96 w-[48rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600/[0.10] blur-[110px]" />
       </div>
       <Container className="relative">
         <motion.div {...fadeUp}>
-          <Card className="overflow-hidden bg-brand-sheen p-10 text-center sm:p-16">
+          <Card className="overflow-hidden bg-brand-sheen p-7 text-center sm:p-16">
             <Logo className="mx-auto size-11" />
             <h2 className="mt-6 text-h1 text-gradient">One interview. A real answer.</h2>
             <p className="mx-auto mt-4 max-w-xl text-lead text-ink-muted">

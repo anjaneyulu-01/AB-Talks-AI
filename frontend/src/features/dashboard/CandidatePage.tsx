@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { CountUp } from '@/components/ui/ScoreRing'
+import { CohortJourney } from '@/features/dashboard/CohortJourney'
 import {
   Avatar,
   Badge,
@@ -131,13 +132,14 @@ export function CandidatePage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 lg:items-end">
+            {/* Hidden on mobile — the sticky footer CTA replaces it there, so
+                the same action never appears twice on one screen. */}
+            <div className="hidden flex-col gap-3 lg:flex lg:items-end">
               <Button
                 variant="primary"
                 size="lg"
                 loading={start.isPending}
                 onClick={() => start.mutate()}
-                className="w-full lg:w-auto"
               >
                 {start.isPending ? 'Preparing your interview…' : 'Start interview'}
                 {!start.isPending && <Play className="size-4" />}
@@ -146,6 +148,9 @@ export function CandidatePage() {
                 {probes.length} questions planned · ~20 minutes
               </p>
             </div>
+            <p className="text-xs text-ink-faint lg:hidden">
+              {probes.length} questions planned · about 20 minutes
+            </p>
           </div>
 
           {start.isError && (
@@ -196,13 +201,21 @@ export function CandidatePage() {
         />
       </div>
 
+      <Card className="mt-4 p-5 sm:p-6">
+        <CohortJourney evidence={evidence} commitDays={Math.round(profile.consistency * 31)} />
+      </Card>
+
+      {/* Order matters on mobile, where this becomes one column. Strategy and
+          exclusions answer "what will this interview be like?" — the question
+          someone actually has before starting — so they come before the
+          full evidence map and the plan. */}
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
-        <div className="space-y-4">
+        <div className="order-2 space-y-4 lg:order-1">
           <EvidenceMap evidence={evidence} />
           <PlanPreview probes={probes} />
         </div>
 
-        <div className="space-y-4">
+        <div className="order-1 space-y-4 lg:order-2">
           <StrategyPanel notes={profile.strategy_notes} />
           <ExclusionPanel
             skipped={evidence.filter((t) => t.strength === 'skipped')}
@@ -210,6 +223,22 @@ export function CandidatePage() {
           />
           <HistoryPanel history={history} />
         </div>
+      </div>
+
+      {/* Sticky mobile CTA. The header button scrolls out of view within a
+          screen or two, and "start" is the only action this page exists for —
+          it should never be more than a thumb-reach away. */}
+      <div className="sticky bottom-0 z-30 -mx-5 mt-6 border-t border-line bg-base/95 px-5 py-3 pb-safe backdrop-blur-xl lg:hidden">
+        <Button
+          variant="primary"
+          size="lg"
+          loading={start.isPending}
+          onClick={() => start.mutate()}
+          className="w-full"
+        >
+          {start.isPending ? 'Preparing your interview…' : `Start interview · ${probes.length} questions`}
+          {!start.isPending && <Play className="size-4" />}
+        </Button>
       </div>
     </Container>
   )
@@ -461,9 +490,23 @@ function ExclusionPanel({
 function HistoryPanel({
   history,
 }: {
-  history: { trend: { session_id: string; date: string; overall: number }[]; best_score: number | null } | undefined
+  history:
+    | {
+        trend: { session_id: string; date: string; overall: number }[]
+        best_score: number | null
+        sessions?: { session_id: string; status: string; turns: number; planned_turns: number }[]
+      }
+    | undefined
 }) {
   const trend = history?.trend ?? []
+
+  // An interview someone abandoned halfway is the most valuable thing on this
+  // panel — it is unfinished work they can resume in one tap. Surfacing it
+  // above the completed list is what stops a dropped session becoming a
+  // silently lost one.
+  const inProgress = (history?.sessions ?? []).find(
+    (s) => s.status === 'in_progress' && s.turns > 0,
+  )
 
   return (
     <Card>
@@ -473,13 +516,44 @@ function HistoryPanel({
           <CardTitle className="text-base">Interview history</CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
+        {inProgress && (
+          <Link
+            to={`/interview/${inProgress.session_id}`}
+            className="block rounded-xl border border-brand-500/30 bg-brand-500/[0.07] p-3.5 transition-colors hover:bg-brand-500/[0.11]"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-brand-300">Interview in progress</p>
+                <p className="nums mt-0.5 text-xs text-ink-muted">
+                  {inProgress.turns} of {inProgress.planned_turns} questions answered
+                </p>
+              </div>
+              <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-brand-300">
+                Resume
+                <ArrowRight className="size-3" />
+              </span>
+            </div>
+            <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-white/[0.08]">
+              <div
+                className="h-full rounded-full bg-brand-400"
+                style={{
+                  width: `${Math.min(100, (inProgress.turns / Math.max(1, inProgress.planned_turns)) * 100)}%`,
+                }}
+              />
+            </div>
+          </Link>
+        )}
+
         {trend.length === 0 ? (
           <div className="rounded-xl border border-dashed border-line-strong bg-white/[0.015] p-5 text-center">
-            <p className="text-sm font-medium text-ink">No interviews yet</p>
+            <p className="text-sm font-medium text-ink">
+              {inProgress ? 'No completed interviews yet' : 'No interviews yet'}
+            </p>
             <p className="mt-1 text-xs leading-relaxed text-ink-subtle">
-              Your first report will appear here, and you'll be able to track progress across
-              attempts.
+              {inProgress
+                ? 'Finish the one above and your report will appear here.'
+                : 'Your first report will appear here, and you’ll be able to track progress across attempts.'}
             </p>
           </div>
         ) : (

@@ -63,8 +63,10 @@ export function AnswerComposer({
   const canSubmit = value.trim().length > 0 && !disabled
 
   return (
-    <div className="shrink-0 border-t border-line bg-base/90 backdrop-blur-xl">
-      <div className="mx-auto w-full max-w-3xl px-5 py-4 sm:px-8">
+    // `pb-safe` keeps the send button clear of the iPhone home indicator,
+    // which otherwise overlaps it and makes the primary action hard to hit.
+    <div className="shrink-0 border-t border-line bg-base/95 pb-safe backdrop-blur-xl">
+      <div className="mx-auto w-full max-w-3xl px-4 py-3 sm:px-8 sm:py-4">
         {error && (
           <div className="mb-3 flex items-start gap-2 rounded-xl border border-danger/25 bg-danger/[0.07] px-3 py-2.5">
             <AlertCircle className="mt-0.5 size-3.5 shrink-0 text-danger" />
@@ -128,9 +130,16 @@ export function AnswerComposer({
           </div>
         </div>
 
-        <p className="mt-2.5 text-center text-[0.6875rem] text-ink-faint">
+        {/* Two versions of the same reassurance. The long one is the message
+            we actually want to send; the short one is what survives 390px
+            without wrapping to three lines and pushing the composer up. */}
+        <p className="mt-2.5 hidden text-center text-[0.6875rem] text-ink-faint sm:block">
           Question {Math.min(turn, plannedTurns)} of about {plannedTurns} · There's no time
           limit, and "I don't know, but here's how I'd find out" is a good answer
+        </p>
+        <p className="mt-2 text-center text-[0.6875rem] text-ink-faint sm:hidden">
+          Q{Math.min(turn, plannedTurns)} of ~{plannedTurns} · No time limit ·
+          "I don't know" is a fine answer
         </p>
       </div>
     </div>
