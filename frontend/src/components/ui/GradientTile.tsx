@@ -36,7 +36,10 @@ export function GradientTile({
   glow?: boolean
 }) {
   return (
-    <div className={cn('relative shrink-0', className)}>
+    // `w-fit` is load-bearing: without it this block-level wrapper stretches to
+    // the card's full width, and the `inset-0` glow below blurs into a wide
+    // horizontal smudge instead of a tight square halo behind the tile.
+    <div className={cn('relative w-fit shrink-0', className)}>
       {glow && (
         <div
           aria-hidden
@@ -87,7 +90,7 @@ export function GradientAvatar({
   const text = { sm: 'text-xs', md: 'text-sm', lg: 'text-lg', xl: 'text-xl' }[size]
 
   return (
-    <div className={cn('relative shrink-0', className)}>
+    <div className={cn('relative w-fit shrink-0', className)}>
       <div
         aria-hidden
         className={cn(
