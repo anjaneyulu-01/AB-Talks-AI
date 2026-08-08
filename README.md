@@ -180,20 +180,22 @@ function, it's the part we can actually **unit-test and explain.** Every transit
 to the UI, so the candidate can see *why* the difficulty just moved.
 
 ```mermaid
-stateDiagram-v2
-    [*] --> OPEN
-    OPEN --> DRILL_DOWN: strong answer (78+)
-    OPEN --> FOLLOW_UP: solid, one gap (58-77)
-    OPEN --> EASE_OFF: struggling (under 42)
-    DRILL_DOWN --> ADVANCE: ceiling found
-    FOLLOW_UP --> ADVANCE: gap closed
-    EASE_OFF --> PIVOT: 2nd weak turn — move on
-    ADVANCE --> DRILL_DOWN
-    ADVANCE --> FOLLOW_UP
-    ADVANCE --> EASE_OFF
-    PIVOT --> ADVANCE
-    ADVANCE --> CLOSE: plan complete
-    CLOSE --> [*]
+flowchart TD
+    START([Start]) --> OPEN["Open question<br/>one rung below baseline"]
+    OPEN --> ANS["Candidate answers<br/>text or 🎤 voice"]
+    ANS --> EVAL{"Evaluate<br/>0–100"}
+    EVAL -->|"strong · 78+"| DRILL["Drill down<br/>harder, same topic"]
+    EVAL -->|"solid, one gap · 58–77"| FU["Follow up<br/>on the exact gap"]
+    EVAL -->|"struggling · under 42"| EASE["Ease off<br/>reframe simpler"]
+    EVAL -->|"2nd weak turn"| PIVOT["Pivot<br/>new topic, no grind"]
+    EVAL -->|"otherwise"| ADV["Advance<br/>next planned topic"]
+    DRILL --> DONE
+    FU --> DONE
+    EASE --> DONE
+    PIVOT --> DONE
+    ADV --> DONE{"Plan<br/>complete?"}
+    DONE -->|no| ANS
+    DONE -->|"yes · last Q eased"| CLOSE([Close · build report])
 ```
 
 Two decisions worth calling out: the **last question is deliberately easier** (a candidate should
