@@ -6,6 +6,7 @@ import {
   Layers,
   Search,
   SlidersHorizontal,
+  Sparkles,
   Users,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -66,8 +67,13 @@ export function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p className="eyebrow mb-3">ABTalks AI Cohort · 31 days · 8 modules</p>
-        <h1 className="text-h1 text-gradient">Choose a profile to interview</h1>
+        <Badge tone="brand" size="md" className="mb-4">
+          <Sparkles className="size-3" />
+          ABTalks AI Cohort · 31 days · 8 modules
+        </Badge>
+        <h1 className="text-h1 text-ink">
+          Choose a profile to <span className="text-gradient-brand">interview</span>
+        </h1>
         <p className="mt-3 max-w-2xl text-lead text-ink-muted">
           Every candidate below has a real cohort record. Open one to see the evidence
           profile and the interview strategy the system derived from it — before you start.
@@ -198,12 +204,12 @@ function SummaryTile({
   hint: string
 }) {
   return (
-    <Card className="flex items-center gap-4 p-5">
-      <div className="flex size-10 items-center justify-center rounded-xl border border-line bg-surface-raised text-brand-400">
-        <Icon className="size-4.5" />
+    <Card hover className="flex items-center gap-4 p-5">
+      <div className="flex size-11 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/[0.07] text-brand-500">
+        <Icon className="size-5" />
       </div>
       <div className="min-w-0">
-        <p className="nums text-xl font-semibold text-ink">{value}</p>
+        <p className="nums text-2xl font-bold tracking-tight text-gradient-brand">{value}</p>
         <p className="text-xs font-medium text-ink-muted">{label}</p>
         <p className="truncate text-[0.6875rem] text-ink-faint">{hint}</p>
       </div>

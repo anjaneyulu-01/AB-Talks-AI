@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Aurora, Grain } from '@/components/ui/effects'
 import { Container, Tooltip } from '@/components/ui/primitives'
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -18,11 +19,16 @@ export function AppShell() {
 
   return (
     <div className="relative min-h-dvh bg-base">
-      {/* Ambient background. Fixed and masked so it never scrolls into a hard
-          edge or competes with content for attention. */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
+      {/* The same signature ambient the landing page uses, so the product
+          reads as one continuous surface rather than a polished front door
+          bolted onto a plainer app. Fixed to the top band and masked, so it
+          sets the tone at the header and fades before it can compete with the
+          data-dense content below. Grain sits over everything for the same
+          "material, not flat gradient" reason it does on the landing. */}
+      <Grain opacity={0.03} />
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-[36rem] overflow-hidden" aria-hidden>
+        <Aurora className="opacity-60" />
         <div className="mask-fade-b absolute inset-0 bg-grid-fade bg-grid opacity-40" />
-        <div className="absolute -top-40 left-1/2 h-[32rem] w-[52rem] -translate-x-1/2 rounded-full bg-brand-600/[0.07] blur-[120px]" />
       </div>
 
       <header className="sticky top-0 z-40 border-b border-line bg-base/80 backdrop-blur-xl">

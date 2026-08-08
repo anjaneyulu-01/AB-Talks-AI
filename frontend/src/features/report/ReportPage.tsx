@@ -111,6 +111,7 @@ export function ReportPage() {
 function ReportHeader({ report }: { report: FeedbackReport }) {
   const [copied, setCopied] = useState(false)
   const rec = RECOMMENDATION_META[report.recommendation]
+  const band = bandStyle(report.overall_score)
 
   const share = async () => {
     try {
@@ -133,8 +134,22 @@ function ReportHeader({ report }: { report: FeedbackReport }) {
         {report.candidate_name}
       </Link>
 
-      <Card className="overflow-hidden">
-        <div className="grid gap-6 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[auto_1fr_auto] lg:items-center">
+      <Card className="relative overflow-hidden">
+        {/* The score is the emotional payoff of the whole product, so the
+            header is staged rather than flat. A soft radial glow keyed to the
+            score's OWN band colour sits behind the ring — an 88 glows green, a
+            48 glows amber — so the header's mood matches the result before a
+            single word is read. Fades out well before the text column so it
+            never hurts contrast on the copy. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: `radial-gradient(42rem 22rem at 12% 0%, ${band.glow}, transparent 60%)`,
+          }}
+        />
+
+        <div className="relative grid gap-6 p-5 sm:gap-8 sm:p-8 lg:grid-cols-[auto_1fr_auto] lg:items-center">
           {/* Centred on mobile so the score reads as the headline it is;
               left-anchored on desktop where it sits beside the summary. */}
           <div className="flex justify-center lg:block">
