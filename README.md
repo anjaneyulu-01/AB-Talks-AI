@@ -380,12 +380,4 @@ frontend/src/
 
 ---
 
-## 🏆 Why this wins
-
-- It **reads the data correctly** where everyone else reads it as a résumé.
-- It's **fair by construction** — skipped material can't be asked, and that's provable.
-- Its adaptation is **real and explainable**, not a prompt hoping to behave.
-- It's **complete, tested, and runs with zero setup** — a judge sees a product, not a 503.
-- It goes **beyond the brief** — voice, cross-interview memory, a genuine design system.
-
 <p align="center"><sub>Built for the ABTalks × Breeth AI Hackathon · Grounded in the 31-day AI Cohort curriculum.</sub></p>
