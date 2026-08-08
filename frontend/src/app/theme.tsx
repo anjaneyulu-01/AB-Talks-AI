@@ -49,9 +49,9 @@ function readStoredTheme(): Theme {
   } catch {
     // Private browsing or blocked storage. Fall through to the default.
   }
-  // Midnight is the identity, so a first-time visitor lands in dark — not
-  // 'system'. The toggle still offers light and system.
-  return 'dark'
+  // The product leads with the bright, colourful light theme; a first-time
+  // visitor lands there. Dark remains a first-class toggle option.
+  return 'light'
 }
 
 function applyTheme(resolved: 'light' | 'dark') {
@@ -69,14 +69,14 @@ function applyTheme(resolved: 'light' | 'dark') {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() =>
-    typeof window === 'undefined' ? 'dark' : readStoredTheme(),
+    typeof window === 'undefined' ? 'light' : readStoredTheme(),
   )
   const [resolved, setResolved] = useState<'light' | 'dark'>(() =>
     typeof window === 'undefined'
-      ? 'dark'
-      : document.documentElement.classList.contains('light')
-        ? 'light'
-        : 'dark',
+      ? 'light'
+      : document.documentElement.classList.contains('dark')
+        ? 'dark'
+        : 'light',
   )
 
   useEffect(() => {
