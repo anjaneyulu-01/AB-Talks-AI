@@ -152,3 +152,16 @@ async def root() -> dict:
         "docs": "/docs",
         "health": f"{settings.api_prefix}/v1/health",
     }
+
+
+@app.get("/healthz", include_in_schema=False)
+async def healthz() -> dict:
+    """Liveness probe for uptime monitors (UptimeRobot, Render, etc.).
+
+    Deliberately trivial: it touches no dependency and does no I/O, so it can
+    only ever answer 200 while the process is up. The rich dependency report
+    lives at ``{api_prefix}/v1/health`` -- that one can legitimately signal a
+    degraded provider or a tripped breaker and must not be used for uptime
+    pings, or a soft failover would page you at 3am.
+    """
+    return {"status": "ok"}
