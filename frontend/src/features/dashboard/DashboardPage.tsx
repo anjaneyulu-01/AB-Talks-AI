@@ -17,7 +17,6 @@ import {
   Card,
   Container,
   EmptyState,
-  Progress,
   Skeleton,
 } from '@/components/ui/primitives'
 import { GradientAvatar, GradientTile } from '@/components/ui/GradientTile'
@@ -153,15 +152,17 @@ export function DashboardPage() {
         {isLoading && (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="space-y-4 p-5">
+              <Card key={i} className="space-y-4 p-5 pt-6">
                 <div className="flex items-center gap-3">
-                  <Skeleton className="size-11 rounded-full" />
+                  {/* rounded-xl to match the gradient avatar tiles, not a circle */}
+                  <Skeleton className="size-11 rounded-xl" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-3.5 w-28" />
                     <Skeleton className="h-3 w-20" />
                   </div>
                 </div>
                 <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-1.5 w-full" />
                 <Skeleton className="h-1.5 w-full" />
               </Card>
             ))}
@@ -182,6 +183,17 @@ export function DashboardPage() {
             title="No candidates match that search"
             description="Try a different name, role, or seniority band."
           />
+        )}
+
+        {filtered.length > 0 && (
+          <p className="mb-4 text-xs text-ink-subtle">
+            Showing{' '}
+            <span className="nums font-semibold text-ink">{filtered.length}</span>
+            {candidates && filtered.length !== candidates.length && (
+              <> of <span className="nums">{candidates.length}</span></>
+            )}{' '}
+            {filtered.length === 1 ? 'profile' : 'profiles'}
+          </p>
         )}
 
         {filtered.length > 0 && (
@@ -269,8 +281,16 @@ function CandidateCard({ candidate, index }: { candidate: CandidateListItem; ind
           </p>
 
           <div className="mt-4 space-y-2.5">
-            <MiniMetric label="Cohort coverage" value={candidate.coverage} />
-            <MiniMetric label="First-try fluency" value={candidate.fluency} />
+            <MiniMetric
+              label="Cohort coverage"
+              value={candidate.coverage}
+              gradient={cardGradient(candidate.id)}
+            />
+            <MiniMetric
+              label="First-try fluency"
+              value={candidate.fluency}
+              gradient={cardGradient(candidate.id)}
+            />
           </div>
 
           <div className="mt-4 flex items-center justify-between border-t border-line pt-3.5">
@@ -293,14 +313,32 @@ function CandidateCard({ candidate, index }: { candidate: CandidateListItem; ind
   )
 }
 
-function MiniMetric({ label, value }: { label: string; value: number }) {
+function MiniMetric({
+  label,
+  value,
+  gradient,
+}: {
+  label: string
+  value: number
+  gradient: string
+}) {
   return (
     <div className="space-y-1">
       <div className="flex items-baseline justify-between">
         <span className="text-[0.6875rem] text-ink-subtle">{label}</span>
-        <span className="nums text-[0.6875rem] font-medium text-ink-muted">{pct(value)}</span>
+        <span className="nums text-[0.6875rem] font-semibold text-ink">{pct(value)}</span>
       </div>
-      <Progress value={value * 100} className="h-1" />
+      {/* The bar carries the card's own colour, so each candidate reads as one
+          cohesive vivid unit rather than every bar being generic indigo. */}
+      <div className="h-1.5 overflow-hidden rounded-full bg-tint/[0.07]">
+        <motion.div
+          className={cn('h-full rounded-full bg-gradient-to-r', gradient)}
+          initial={{ width: 0 }}
+          whileInView={{ width: `${Math.round(value * 100)}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </div>
     </div>
   )
 }
