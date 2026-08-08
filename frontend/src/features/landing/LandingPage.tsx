@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Ban, BrainCircuit, Quote, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Ban, Quote } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Aurora, Grain, Marquee } from '@/components/ui/effects'
 import { Badge, Button, Card, Container } from '@/components/ui/primitives'
+import { Bento } from '@/features/landing/Bento'
 import { Hero, ProofStrip } from '@/features/landing/Hero'
 import { DerivationStrip } from '@/features/landing/LiveDemo'
 import { StepFlow } from '@/features/landing/StepFlow'
@@ -22,12 +24,13 @@ import { cn } from '@/lib/utils'
  * The rhythm now alternates deliberately, and the ground colour changes with
  * it so scrolling has a pulse:
  *
- *   hero          live demo of the mechanism
+ *   hero          live demo, aurora mesh, tilt + gradient border
+ *   marquee       infinite ticker of the real stack
  *   proof         thin bordered strip, dense real numbers
  *   the gap       purely editorial — no cards at all
+ *   capabilities  bento grid; layout carries the hierarchy
  *   how it works  connected vertical flow, scroll-linked spine
  *   fairness      asymmetric split; the one idea that earns a full stop
- *   trust         three cards — used ONCE, so they still read as an accent
  *   voices        offset quotes rather than a flat grid
  *   cta           full-bleed close
  *
@@ -38,18 +41,84 @@ import { cn } from '@/lib/utils'
 
 export function LandingPage() {
   return (
-    <div className="min-h-dvh bg-base">
+    <div className="relative min-h-dvh bg-base">
+      {/* Film grain over the whole page. Flat digital gradients read as cheap
+          because nothing physical is that smooth — a few percent of noise is
+          what makes large colour fields feel like a material. */}
+      <Grain />
       <Nav />
       <Hero />
+      <TechMarquee />
       <ProofStrip />
       <TheGap />
+      <Capabilities />
       <HowItWorks />
       <FairnessMoment />
-      <TrustSection />
       <Voices />
       <FinalCta />
       <Footer />
     </div>
+  )
+}
+
+/* --------------------------------------------------------------- Marquee */
+
+/**
+ * The stack, as an infinite ticker.
+ *
+ * Every one of these is genuinely in the build — this is a statement of what
+ * runs, not a logo wall of companies we have no relationship with.
+ */
+const STACK = [
+  'Groq', 'Gemini 2.5 Flash', 'FastAPI', 'React 19', 'MongoDB Atlas',
+  'Pydantic', 'Breeth MCP', 'TypeScript', 'Tailwind', 'Framer Motion',
+]
+
+function TechMarquee() {
+  return (
+    <section className="relative border-y border-line bg-surface/30 py-5">
+      <p className="mb-4 text-center text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-ink-faint">
+        Running on
+      </p>
+      <Marquee speed={38}>
+        {STACK.map((name) => (
+          <span
+            key={name}
+            className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink-muted"
+          >
+            <span className="size-1.5 rounded-full bg-brand-400/60" />
+            {name}
+          </span>
+        ))}
+      </Marquee>
+    </section>
+  )
+}
+
+/* ----------------------------------------------------------- Capabilities */
+
+/**
+ * Bento grid.
+ *
+ * Replaces the three-equal-cards section. Equal cards give every idea equal
+ * weight, which is almost never true — a bento lets layout carry hierarchy,
+ * and every cell holds a real artefact rather than an icon and a paragraph.
+ */
+function Capabilities() {
+  return (
+    <section className="relative overflow-hidden border-y border-line bg-surface/40 py-20 sm:py-28">
+      <Aurora className="opacity-50" />
+      <Container className="relative">
+        <SectionHead
+          eyebrow="What makes it different"
+          title="Built on evidence, not vibes"
+          lead="Four decisions you can verify in the repository — each one visible in the interview itself."
+        />
+        <div className="mt-14">
+          <Bento />
+        </div>
+      </Container>
+    </section>
   )
 }
 
@@ -319,116 +388,6 @@ function FairnessMoment() {
   )
 }
 
-/* ----------------------------------------------------------------- Trust */
-
-/** Cards appear exactly once on this page, so they still read as an accent. */
-function TrustSection() {
-  const items = [
-    {
-      icon: BrainCircuit,
-      accent: 'text-brand-400',
-      ring: 'border-brand-500/25 bg-brand-500/[0.05]',
-      title: 'Five attempts is the most useful signal',
-      body: 'A mission you cleared on the fifth try is the highest-value question in your interview — the one place nobody knows whether the understanding landed or the procedure was memorised.',
-      foot: (
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            ['1 attempt', 'text-band-exceptional bg-band-exceptional/10'],
-            ['2–3', 'text-band-strong bg-band-strong/10'],
-            ['4–5', 'text-band-developing bg-band-developing/10'],
-          ].map(([label, cls]) => (
-            <span
-              key={label}
-              className={cn('rounded-md px-2 py-1 text-[0.6875rem] font-medium', cls)}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-      ),
-    },
-    {
-      icon: ShieldCheck,
-      accent: 'text-accent-cyan',
-      ring: 'border-accent-cyan/25 bg-accent-cyan/[0.05]',
-      title: 'The interview cannot break',
-      body: 'Groq is primary. If it times out or rate-limits, Gemini takes over mid-sentence and you never notice. If both are down, a deterministic strategist keeps your session alive.',
-      foot: (
-        <div className="flex items-center gap-2 rounded-lg border border-line bg-tint/[0.03] p-2.5 text-xs">
-          <span className="font-medium text-ink">Groq</span>
-          <ArrowRight className="size-3 text-ink-faint" />
-          <span className="text-ink-muted">Gemini</span>
-          <ArrowRight className="size-3 text-ink-faint" />
-          <span className="text-ink-subtle">Local</span>
-        </div>
-      ),
-    },
-    {
-      icon: Quote,
-      accent: 'text-band-exceptional',
-      ring: 'border-band-exceptional/25 bg-band-exceptional/[0.05]',
-      title: 'Every score shows its working',
-      body: 'Scores are a weighted average over the turns that actually measured each competency — computed in code, not guessed by a model at the end. The report links every number to the answer behind it.',
-      foot: (
-        <div className="space-y-1.5">
-          {([['Technical Knowledge', 84], ['Reasoning', 71]] as [string, number][]).map(
-            ([label, value]) => (
-              <div key={label} className="space-y-1">
-                <div className="flex justify-between text-[0.6875rem]">
-                  <span className="text-ink-subtle">{label}</span>
-                  <span className="nums text-ink-muted">{value}</span>
-                </div>
-                <div className="h-1 overflow-hidden rounded-full bg-tint/[0.07]">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-cyan"
-                    style={{ width: `${value}%` }}
-                  />
-                </div>
-              </div>
-            ),
-          )}
-        </div>
-      ),
-    },
-  ]
-
-  return (
-    <section className="relative border-y border-line bg-surface/40 py-20 sm:py-28">
-      <Container>
-        <SectionHead eyebrow="Why it's trustworthy" title="Three decisions you can feel" />
-
-        <div className="mt-14 grid gap-4 lg:grid-cols-3">
-          {items.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, delay: staggerDelay(i, 0.09), ease: EASE_OUT }}
-            >
-              <Card hover className="flex h-full flex-col">
-                <div className="p-6 pb-4">
-                  <div
-                    className={cn(
-                      'mb-4 flex size-10 items-center justify-center rounded-xl border',
-                      item.ring,
-                    )}
-                  >
-                    <item.icon className={cn('size-5', item.accent)} />
-                  </div>
-                  <h3 className="text-h3 text-ink">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-muted">{item.body}</p>
-                </div>
-                <div className="mt-auto p-6 pt-0">{item.foot}</div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </Container>
-    </section>
-  )
-}
-
 /* ---------------------------------------------------------------- Voices */
 
 const VOICES = [
@@ -518,10 +477,10 @@ function Voices() {
 
 function FinalCta() {
   return (
-    <section className="relative overflow-hidden py-20 sm:py-28">
+    <section className="relative overflow-hidden py-24 sm:py-32">
+      <Aurora />
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-50" />
-        <div className="absolute left-1/2 top-1/2 h-96 w-[48rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600/[var(--glow-alpha)] blur-[110px]" />
+        <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-60" />
       </div>
 
       <Container className="relative">
@@ -532,13 +491,23 @@ function FinalCta() {
           transition={{ duration: 0.6, ease: EASE_OUT }}
           className="mx-auto max-w-2xl text-center"
         >
-          <Logo className="mx-auto size-12" />
-          <h2 className="mt-6 text-h1 text-gradient">One interview. A real answer.</h2>
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="motion-reduce:animate-none"
+          >
+            <Logo className="mx-auto size-14" />
+          </motion.div>
+
+          <h2 className="mt-7 text-h1 text-gradient">
+            One interview.{' '}
+            <span className="text-gradient-brand">A real answer.</span>
+          </h2>
           <p className="mx-auto mt-5 text-lead text-ink-muted">
             Twenty minutes, and you'll know exactly where you stand and exactly what to do
             next. Nothing to install, nothing to configure.
           </p>
-          <Link to="/dashboard" className="mt-8 inline-block">
+          <Link to="/dashboard" className="mt-9 inline-block">
             <Button variant="primary" size="lg">
               Choose your profile
               <ArrowRight className="size-4" />

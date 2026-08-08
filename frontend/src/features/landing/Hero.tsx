@@ -3,6 +3,7 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { CountUp } from '@/components/ui/ScoreRing'
+import { Aurora, GradientBorder, ScrollCue, TiltCard } from '@/components/ui/effects'
 import { Badge, Button, Container } from '@/components/ui/primitives'
 import { LiveDemo } from '@/features/landing/LiveDemo'
 import { EASE_OUT } from '@/lib/motion'
@@ -32,10 +33,12 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-16">
+      {/* Layered background: drifting aurora mesh underneath, masked grid on
+          top. The grid gives the soft colour something to register against —
+          without it the gradient reads as a smudge rather than as depth. */}
+      <Aurora />
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-60" />
-        <div className="absolute -top-32 left-1/2 h-[36rem] w-[64rem] -translate-x-1/2 rounded-full bg-brand-600/[var(--glow-alpha)] blur-[130px]" />
-        <div className="absolute right-[8%] top-40 size-72 rounded-full bg-accent-cyan/[0.06] blur-[100px]" />
+        <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-70" />
       </div>
 
       <Container className="relative py-14 sm:py-24">
@@ -123,7 +126,24 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.4, ease: EASE_OUT }}
           className="mx-auto mt-12 max-w-4xl sm:mt-16"
         >
-          <LiveDemo />
+          {/* Tilt + gradient border, together. The border makes the demo read
+              as the page's centrepiece; the tilt gives it a physical response
+              so it feels like an object rather than a picture of one. Both
+              disable themselves on touch and under reduced motion. */}
+          <TiltCard max={3}>
+            <GradientBorder glow>
+              <LiveDemo />
+            </GradientBorder>
+          </TiltCard>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 0.6 }}
+          className="mt-14 hidden justify-center sm:flex"
+        >
+          <ScrollCue />
         </motion.div>
       </Container>
     </section>

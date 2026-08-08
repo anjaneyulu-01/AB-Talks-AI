@@ -77,6 +77,11 @@
 
     --accent-cyan: 190 85% 40%;
     --accent-teal: 172 75% 36%;
+    /* The third aurora hue. Violet→cyan alone is a cold two-stop ramp; adding
+       fuchsia gives the gradient a warm centre and is what makes it read as
+       depth rather than a CSS gradient. */
+    --accent-fuchsia: 300 78% 55%;
+    --accent-amber: 32 92% 52%;
 
     /* ---- Score bands --------------------------------------------------- */
     /* Darkened for light mode. The dark-theme emerald (#34D399) on white is
@@ -163,6 +168,8 @@
 
     --accent-cyan: 188 92% 62%;
     --accent-teal: 172 80% 55%;
+    --accent-fuchsia: 300 92% 70%;
+    --accent-amber: 36 96% 62%;
 
     /* ---- Score bands --------------------------------------------------- */
     --band-exceptional: 158 72% 55%;

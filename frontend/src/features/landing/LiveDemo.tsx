@@ -2,7 +2,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Ban, Check, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { Card } from '@/components/ui/primitives'
 import { EASE_OUT } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
@@ -106,7 +105,10 @@ export function LiveDemo() {
   const style = VERDICT_STYLE[scenario.verdict]
 
   return (
-    <Card className="overflow-hidden p-0 shadow-float">
+    // A plain container, not a `Card`. The hero wraps this in `GradientBorder`,
+    // which already supplies the surface and the border — nesting a Card
+    // inside would double both.
+    <div className="overflow-hidden rounded-[1.15rem]">
       {/* Chrome */}
       <div className="flex items-center gap-2 border-b border-line bg-surface-raised px-4 py-3">
         <div className="flex gap-1.5" aria-hidden>
@@ -264,7 +266,7 @@ export function LiveDemo() {
           )}
         </div>
       </div>
-    </Card>
+    </div>
   )
 }
 
