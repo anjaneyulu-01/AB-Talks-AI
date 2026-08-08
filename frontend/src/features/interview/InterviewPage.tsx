@@ -16,8 +16,11 @@ import {
 import { InterviewTopBar } from '@/features/interview/InterviewTopBar'
 import { ThinkingIndicator } from '@/features/interview/ThinkingIndicator'
 import { TranscriptTurn } from '@/features/interview/TranscriptTurn'
+import { useSpeechSynthesis } from '@/hooks/useSpeech'
 import { api, ApiError } from '@/lib/api'
-import type { TranscriptMessage } from '@/lib/types'
+import type { InterviewerMessage, TranscriptMessage } from '@/lib/types'
+
+const VOICE_PREF_KEY = 'abtalks-voice-mode'
 
 export function InterviewPage() {
   const { sessionId = '' } = useParams()
@@ -29,6 +32,19 @@ export function InterviewPage() {
   const [railOpen, setRailOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  // Voice mode: the interviewer speaks questions aloud and the candidate can
+  // answer by voice. Preference persists so it survives a page refresh
+  // mid-interview.
+  const tts = useSpeechSynthesis()
+  const [voiceMode, setVoiceMode] = useState(() => {
+    try {
+      return localStorage.getItem(VOICE_PREF_KEY) === 'on'
+    } catch {
+      return false
+    }
+  })
+  const lastSpokenIdRef = useRef<string | null>(null)
 
   const { data: state, isLoading, isError, error } = useQuery({
     queryKey: ['interview', sessionId],
@@ -84,6 +100,42 @@ export function InterviewPage() {
     setDraft('')
   }, [draft, submit, state?.done])
 
+  /* Speak each new interviewer message when voice mode is on. Keyed on message
+     id so a re-render never re-speaks the same question, and so a brand-new
+     question (new id) is spoken exactly once. */
+  const latestInterviewer = state?.messages
+    ? ([...state.messages].reverse().find((m) => m.role === 'interviewer') as
+        | InterviewerMessage
+        | undefined)
+    : undefined
+
+  useEffect(() => {
+    if (!voiceMode || !tts.supported || !latestInterviewer) return
+    if (latestInterviewer.id === lastSpokenIdRef.current) return
+    lastSpokenIdRef.current = latestInterviewer.id
+    tts.speak(latestInterviewer.content)
+  }, [voiceMode, tts, latestInterviewer])
+
+  const toggleVoice = useCallback(() => {
+    setVoiceMode((on) => {
+      const next = !on
+      try {
+        localStorage.setItem(VOICE_PREF_KEY, next ? 'on' : 'off')
+      } catch {
+        /* storage blocked — preference just won't persist */
+      }
+      if (!next) {
+        tts.cancel()
+      } else if (latestInterviewer) {
+        // Turning it on mid-interview should read the current question, not
+        // wait for the next one.
+        lastSpokenIdRef.current = latestInterviewer.id
+        tts.speak(latestInterviewer.content)
+      }
+      return next
+    })
+  }, [tts, latestInterviewer])
+
   if (isLoading) return <InterviewSkeleton />
 
   if (isError || !state) {
@@ -118,7 +170,15 @@ export function InterviewPage() {
     // on-screen keyboard, so the composer ends up below the fold exactly when
     // someone is trying to type into it.
     <div className="flex h-dvh flex-col overflow-hidden bg-base">
-      <InterviewTopBar state={state} elapsed={elapsed} />
+      <InterviewTopBar
+        state={state}
+        elapsed={elapsed}
+        voiceMode={voiceMode}
+        voiceSupported={tts.supported}
+        speaking={tts.speaking}
+        onToggleVoice={toggleVoice}
+        onStopSpeaking={tts.cancel}
+      />
       <MobileStatStrip state={state} onOpen={() => setRailOpen(true)} />
 
       <div className="flex min-h-0 flex-1">
@@ -160,6 +220,8 @@ export function InterviewPage() {
               }
               turn={state.live.turn}
               plannedTurns={state.live.planned_turns}
+              voiceMode={voiceMode}
+              onMicActivity={tts.cancel}
             />
           )}
         </div>

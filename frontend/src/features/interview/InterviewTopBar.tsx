@@ -1,4 +1,5 @@
-import { Clock, Layers, X } from 'lucide-react'
+import { Clock, Headphones, Layers, Volume2, X } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
@@ -18,9 +19,19 @@ import { cn, formatClock } from '@/lib/utils'
 export function InterviewTopBar({
   state,
   elapsed,
+  voiceMode,
+  voiceSupported,
+  speaking,
+  onToggleVoice,
+  onStopSpeaking,
 }: {
   state: InterviewState
   elapsed: number
+  voiceMode: boolean
+  voiceSupported: boolean
+  speaking: boolean
+  onToggleVoice: () => void
+  onStopSpeaking: () => void
 }) {
   const { live, profile } = state
   const progress = Math.round(live.progress * 100)
@@ -83,6 +94,47 @@ export function InterviewTopBar({
               {Math.min(live.answered + 1, live.planned_turns)} / {live.planned_turns}
             </span>
           </span>
+
+          {/* Voice-mode toggle. When speaking, it pulses and a click stops the
+              speech; otherwise it turns voice mode on/off. Hidden entirely on
+              browsers without speech synthesis. */}
+          {voiceSupported && (
+            <Tooltip
+              label={
+                speaking
+                  ? 'Speaking — click to stop'
+                  : voiceMode
+                    ? 'Voice mode on — questions are read aloud. Click to turn off.'
+                    : 'Turn on voice mode — hear questions and answer by speaking'
+              }
+              side="bottom"
+            >
+              <button
+                onClick={speaking ? onStopSpeaking : onToggleVoice}
+                aria-pressed={voiceMode}
+                aria-label="Voice mode"
+                className={cn(
+                  'relative flex size-9 items-center justify-center rounded-lg transition-colors',
+                  voiceMode
+                    ? 'bg-brand-500/15 text-brand-400'
+                    : 'text-ink-faint hover:bg-tint/[0.06] hover:text-ink-muted',
+                )}
+              >
+                {speaking ? (
+                  <>
+                    <motion.span
+                      className="absolute inset-0 rounded-lg bg-brand-500/20"
+                      animate={{ opacity: [0.5, 0.15, 0.5] }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                    />
+                    <Volume2 className="relative size-4" />
+                  </>
+                ) : (
+                  <Headphones className="size-4" />
+                )}
+              </button>
+            </Tooltip>
+          )}
 
           <ThemeToggleCompact />
 
