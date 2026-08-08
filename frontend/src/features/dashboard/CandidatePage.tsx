@@ -14,10 +14,10 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
+import { GradientAvatar, GradientTile } from '@/components/ui/GradientTile'
 import { CountUp } from '@/components/ui/ScoreRing'
 import { CohortJourney } from '@/features/dashboard/CohortJourney'
 import {
-  Avatar,
   Badge,
   Button,
   Card,
@@ -26,14 +26,13 @@ import {
   CardTitle,
   Container,
   EmptyState,
-  Progress,
   Skeleton,
   Tooltip,
 } from '@/components/ui/primitives'
 import { api, ApiError } from '@/lib/api'
+import { cardGradient, DIFFICULTY_GRADIENT, DIFFICULTY_TINT } from '@/lib/categoryColors'
 import type { EvidenceTopic, PlannedProbe } from '@/lib/types'
 import {
-  avatarTint,
   bandStyle,
   cn,
   COMPETENCY_LABELS,
@@ -111,7 +110,11 @@ export function CandidatePage() {
         <Card className="overflow-hidden">
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div className="flex items-start gap-4">
-              <Avatar name={profile.candidate_name} tint={avatarTint(profile.candidate_id)} size="lg" />
+              <GradientAvatar
+                name={profile.candidate_name}
+                gradient={cardGradient(profile.candidate_id)}
+                size="lg"
+              />
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-h2 text-ink">{profile.candidate_name}</h1>
@@ -169,6 +172,7 @@ export function CandidatePage() {
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricTile
           icon={CalendarDays}
+          gradient="from-brand-500 to-accent-violet"
           label="Consistency"
           value={Math.round(profile.consistency * 31)}
           suffix=" / 31"
@@ -177,6 +181,7 @@ export function CandidatePage() {
         />
         <MetricTile
           icon={Flame}
+          gradient="from-accent-amber to-warn"
           label="First-try fluency"
           value={Math.round(profile.fluency * 100)}
           suffix="%"
@@ -185,6 +190,7 @@ export function CandidatePage() {
         />
         <MetricTile
           icon={ListChecks}
+          gradient="from-band-exceptional to-accent-teal"
           label="Coverage"
           value={Math.round(profile.coverage * 100)}
           suffix="%"
@@ -193,6 +199,7 @@ export function CandidatePage() {
         />
         <MetricTile
           icon={Target}
+          gradient={DIFFICULTY_GRADIENT[profile.baseline_difficulty]}
           label="Opening difficulty"
           value={profile.baseline_difficulty}
           suffix=" / 5"
@@ -247,7 +254,8 @@ export function CandidatePage() {
 /* ------------------------------------------------------------- Metric tile */
 
 function MetricTile({
-  icon: Icon,
+  icon,
+  gradient,
   label,
   value,
   suffix,
@@ -255,6 +263,7 @@ function MetricTile({
   fill,
 }: {
   icon: typeof Target
+  gradient: string
   label: string
   value: number
   suffix: string
@@ -262,17 +271,27 @@ function MetricTile({
   fill: number
 }) {
   return (
-    <Card className="space-y-3 p-5">
-      <div className="flex items-center justify-between">
-        <p className="eyebrow">{label}</p>
-        <Icon className="size-3.5 text-ink-faint" />
+    <Card className="p-5">
+      <div className="flex items-center gap-3">
+        <GradientTile icon={icon} gradient={gradient} size="md" />
+        <div className="min-w-0">
+          <p className="nums text-2xl font-bold leading-none tracking-tight text-ink">
+            <CountUp value={value} />
+            <span className="text-base font-normal text-ink-subtle">{suffix}</span>
+          </p>
+          <p className="eyebrow mt-1">{label}</p>
+        </div>
       </div>
-      <p className="text-2xl font-semibold tracking-tight text-ink">
-        <CountUp value={value} />
-        <span className="text-base font-normal text-ink-subtle">{suffix}</span>
-      </p>
-      <Progress value={fill * 100} className="h-1" />
-      <p className="text-[0.6875rem] text-ink-faint">{hint}</p>
+      {/* Bar carries the tile's own colour, so the metric reads as one unit. */}
+      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-tint/[0.07]">
+        <motion.div
+          className={cn('h-full rounded-full bg-gradient-to-r', gradient)}
+          initial={{ width: 0 }}
+          animate={{ width: `${Math.round(fill * 100)}%` }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </div>
+      <p className="mt-2 text-[0.6875rem] text-ink-faint">{hint}</p>
     </Card>
   )
 }
@@ -304,7 +323,12 @@ function EvidenceMap({ evidence }: { evidence: EvidenceTopic[] }) {
       <CardContent className="space-y-5">
         {Object.entries(byModule).map(([module, topics]) => (
           <div key={module} className="space-y-2">
-            <p className="text-xs font-medium text-ink-subtle">{module}</p>
+            <div className="flex items-center gap-2">
+              <span
+                className={cn('h-3.5 w-1 rounded-full bg-gradient-to-b', cardGradient(module))}
+              />
+              <p className="text-xs font-semibold text-ink-muted">{module}</p>
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {topics.map((topic) => {
                 const meta = EVIDENCE_META[topic.strength]
@@ -368,21 +392,34 @@ function PlanPreview({ probes }: { probes: PlannedProbe[] }) {
         {probes.map((probe, i) => (
           <div
             key={probe.index}
-            className="flex items-start gap-3 rounded-xl border border-line bg-base-200/60 p-3"
+            className="flex items-start gap-3 rounded-xl border border-line bg-base-200/60 p-3 transition-colors hover:border-line-strong"
           >
-            <span className="nums mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-lg bg-tint/[0.05] text-[0.6875rem] font-semibold text-ink-subtle">
+            {/* Number tile coloured by the difficulty it will be asked at —
+                the question order becomes a visible heat ramp. */}
+            <span
+              className={cn(
+                'nums mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg',
+                'bg-gradient-to-br text-xs font-bold text-white',
+                DIFFICULTY_GRADIENT[probe.difficulty],
+              )}
+            >
               {i + 1}
             </span>
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-sm font-medium text-ink">
-                  Day {probe.day} · {probe.day_title}
-                </span>
-              </div>
+              <span className="text-sm font-medium text-ink">
+                Day {probe.day} · {probe.day_title}
+              </span>
               <p className="mt-1 text-xs leading-relaxed text-ink-muted">{probe.rationale}</p>
             </div>
-            <div className="flex shrink-0 flex-col items-end gap-1">
-              <Badge tone="outline">{probe.difficulty_label}</Badge>
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <span
+                className={cn(
+                  'rounded-full border px-2 py-0.5 text-[0.625rem] font-semibold',
+                  DIFFICULTY_TINT[probe.difficulty],
+                )}
+              >
+                {probe.difficulty_label}
+              </span>
               <span className="text-[0.625rem] text-ink-faint">
                 {COMPETENCY_LABELS[probe.competency]}
               </span>

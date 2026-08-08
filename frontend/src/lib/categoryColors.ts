@@ -63,6 +63,15 @@ export const DIFFICULTY_SOLID: Record<number, string> = {
   5: 'text-band-emerging',
 }
 
+/** Soft-tinted pill styling per difficulty — coloured text on a faint wash. */
+export const DIFFICULTY_TINT: Record<number, string> = {
+  1: 'text-band-exceptional bg-band-exceptional/10 border-band-exceptional/25',
+  2: 'text-accent-teal bg-accent-teal/10 border-accent-teal/25',
+  3: 'text-accent-sky bg-accent-sky/10 border-accent-sky/25',
+  4: 'text-accent-amber bg-accent-amber/10 border-accent-amber/25',
+  5: 'text-band-emerging bg-band-emerging/10 border-band-emerging/25',
+}
+
 /** One distinct hue per curriculum module (8), for module chips and rings. */
 export const MODULE_GRADIENT: Record<number, string> = {
   1: 'from-brand-500 to-accent-violet',
