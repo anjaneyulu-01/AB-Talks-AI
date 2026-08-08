@@ -55,10 +55,10 @@ export default {
         accent: {
           cyan: withAlpha('--accent-cyan'),
           teal: withAlpha('--accent-teal'),
-          // The third aurora hue. Violet→cyan alone is a cold two-stop ramp;
-          // fuchsia gives the gradient a warm centre, which is what makes it
-          // read as depth rather than as a CSS gradient.
-          fuchsia: withAlpha('--accent-fuchsia'),
+          // The bright pop in gradients. Green→cyan alone is a narrow ramp;
+          // a yellow-green lime keeps the aurora from reading as one flat
+          // wash of brand colour.
+          lime: withAlpha('--accent-lime'),
           amber: withAlpha('--accent-amber'),
         },
 
@@ -82,6 +82,15 @@ export default {
          * `bg-tint/[0.06]` is a subtle wash in both themes rather than
          * invisible in one of them.
          */
+        /** Primary CTA. A dedicated pair because the fill/text relationship
+         *  INVERTS between themes: dark-green-on-white vs bright-green-with-
+         *  dark-text. One colour cannot serve both and stay accessible. */
+        cta: {
+          DEFAULT: withAlpha('--cta-bg'),
+          hover: withAlpha('--cta-bg-hover'),
+          fg: withAlpha('--cta-fg'),
+        },
+
         tint: withAlpha('--tint'),
 
         /** Modal/sheet backdrop. Dark in BOTH themes — a scrim's job is to

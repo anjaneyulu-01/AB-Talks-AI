@@ -3,116 +3,118 @@
  *
  * ## Why this file exists
  *
- * The previous palette hardcoded a cold blue-black base (#0A0A0F) with default
- * indigo (#6366F1) — the exact combination every AI product ships, and it made
- * a considered product look like a template. It also made light mode
- * impossible: colours were baked into components rather than referenced.
+ * Every colour is a CSS custom property. Components reference semantic names
+ * (`bg-surface`, `text-ink`, `border-line`) and never a literal, so switching
+ * theme swaps the tokens and no component code changes.
  *
- * Every colour is now a CSS custom property. Components reference semantic
- * names (`bg-surface`, `text-ink`, `border-line`) and never a literal, so
- * switching theme swaps the tokens and nothing else has to change.
- *
- * ## The two decisions that make this palette work
- *
- * **1. Warm neutrals, not blue-black.** The base carries a subtle violet-warm
- * cast rather than a blue one. Cold blue-greys read clinical — like a
- * dashboard that is measuring you. This product's stated job is to *reduce*
- * anxiety before an interview, and warmth does more for that than any amount
- * of encouraging copy. In light mode the same principle gives a warm paper
- * white rather than a clinical #FFFFFF.
- *
- * **2. The brand accent is constrained, so make it rich.** Score bands already
- * own green (exceptional), cyan (strong), amber (developing) and rose
- * (emerging). A brand colour from any of those families would collide
- * semantically — "is this green because it's on-brand or because I did well?"
- * That leaves the violet family, so rather than settle for default indigo it
- * is pushed to a true saturated violet that reads as deliberate.
- *
- * ## Format
- *
- * Values are raw HSL channels (`258 90% 66%`), not `hsl(...)`, so Tailwind's
+ * Values are raw HSL channels (`152 72% 40%`), not `hsl(...)`, so Tailwind's
  * `<alpha-value>` placeholder works: `bg-brand-500/20` resolves correctly.
+ *
+ * ## The palette decision
+ *
+ * Green is the primary — it reads as growth, readiness, and *go*, which is
+ * precisely what a pre-interview product is for. Violet was competent and
+ * generic; green is warmer, fresher, and far less common in this category.
+ *
+ * **The collision, and why it is deliberate.** Score bands already use green
+ * for `exceptional`. Making the brand a *different* green would mean "green"
+ * signals two unrelated things and the report becomes ambiguous. So the brand
+ * green and the success green are the same family on purpose: green means
+ * good / growth / ready everywhere, and brand reinforces scoring rather than
+ * competing with it. `strong` moves to sky-blue so the ladder still reads as
+ * four distinct steps.
+ *
+ * ## The neutrals
+ *
+ * Light mode is a faintly green-tinted white — near-white, not clinical
+ * #FFFFFF, so it feels like paper rather than a spec sheet. Text is a deep
+ * navy-slate rather than black: it sits better beside green than a warm brown
+ * black does, and it is what makes the whole thing read fresh.
+ *
+ * Dark mode uses a cool slate base rather than a green-tinted one. Tinting a
+ * dark ground green makes it look sickly and dated; a neutral-cool ground with
+ * vivid green accents is what keeps it premium.
  */
 
 @layer base {
   :root {
     /* ---- Surfaces ------------------------------------------------------ */
-    /* Warm off-white. Pure #FFF under a long reading session is fatiguing
-       and reads as unfinished; paper-white reads as considered. */
-    --bg: 45 33% 98%;
-    --bg-50: 45 25% 96%;
-    --bg-100: 45 22% 94%;
-    --bg-200: 45 20% 92%;
-    --bg-900: 45 40% 99%;
+    --bg: 150 40% 98%;
+    --bg-50: 150 30% 96%;
+    --bg-100: 150 26% 94%;
+    --bg-200: 150 22% 92%;
+    --bg-900: 150 45% 99%;
 
-    /* Cards are pure white so they lift cleanly off the warm ground. */
+    /* Cards are pure white so they lift cleanly off the tinted ground. */
     --surface: 0 0% 100%;
     --surface-raised: 0 0% 100%;
     --surface-overlay: 0 0% 100%;
-    --surface-hover: 45 25% 97%;
+    --surface-hover: 150 30% 97%;
 
     /* ---- Lines --------------------------------------------------------- */
-    --line: 265 14% 90%;
-    --line-strong: 265 12% 84%;
+    --line: 155 18% 89%;
+    --line-strong: 155 16% 82%;
 
     /* ---- Text ---------------------------------------------------------- */
-    /* Warm near-black rather than pure black — softer, and it matches the
-       warmth of the ground so the page reads as one material. */
-    --ink: 265 30% 12%;
-    --ink-muted: 265 12% 38%;
-    --ink-subtle: 265 10% 52%;
-    --ink-faint: 265 9% 64%;
+    /* Deep navy-slate, not black. Pairs with green far better than a warm
+       black, and is the single biggest reason this reads "fresh". */
+    --ink: 210 40% 12%;
+    --ink-muted: 210 14% 38%;
+    --ink-subtle: 208 12% 50%;
+    --ink-faint: 208 11% 62%;
 
-    /* ---- Brand --------------------------------------------------------- */
-    /* Darker than the dark-theme brand: the same violet at 66% lightness
-       fails contrast against white. */
-    --brand-50: 258 100% 97%;
-    --brand-100: 258 95% 94%;
-    --brand-300: 258 85% 74%;
-    --brand-400: 258 80% 64%;
-    --brand-500: 258 78% 56%;
-    --brand-600: 258 74% 48%;
-    --brand-700: 258 70% 42%;
-    --brand-900: 258 60% 28%;
+    /* ---- Brand — green ------------------------------------------------- */
+    /* 600 is the button fill: dark enough for white label text at AA. */
+    --brand-50: 150 70% 96%;
+    --brand-100: 150 66% 91%;
+    --brand-300: 152 60% 62%;
+    --brand-400: 152 66% 46%;
+    --brand-500: 153 72% 38%;
+    --brand-600: 154 76% 32%;
+    --brand-700: 156 78% 26%;
+    --brand-900: 158 70% 16%;
 
-    --accent-cyan: 190 85% 40%;
-    --accent-teal: 172 75% 36%;
-    /* The third aurora hue. Violet→cyan alone is a cold two-stop ramp; adding
-       fuchsia gives the gradient a warm centre and is what makes it read as
-       depth rather than a CSS gradient. */
-    --accent-fuchsia: 300 78% 55%;
-    --accent-amber: 32 92% 52%;
+    --accent-cyan: 190 88% 38%;
+    --accent-teal: 172 80% 34%;
+    /* The bright pop in gradients — a yellow-green that keeps the aurora from
+       reading as one flat wash of brand colour. */
+    --accent-lime: 92 68% 40%;
+    --accent-amber: 36 92% 46%;
+
+
+    /* ---- Primary CTA --------------------------------------------------- */
+    /* Green is perceptually bright, so white-on-green needs a much darker
+       green than white-on-violet did — the first pass failed AA at 4.08:1.
+       Light mode darkens the fill and keeps white text (4.56:1). */
+    --cta-bg: 154 76% 29%;
+    --cta-bg-hover: 154 78% 25%;
+    --cta-fg: 0 0% 100%;
 
     /* ---- Score bands --------------------------------------------------- */
-    /* Darkened for light mode. The dark-theme emerald (#34D399) on white is
-       roughly 1.9:1 against the background — unreadable as text. */
-    --band-exceptional: 160 78% 32%;
-    --band-strong: 190 82% 36%;
-    --band-developing: 35 88% 40%;
-    --band-emerging: 350 72% 48%;
+    /* `exceptional` shares the brand hue on purpose (see header). `strong`
+       moved to sky so the four steps stay visually distinct. */
+    --band-exceptional: 153 72% 34%;
+    --band-strong: 200 88% 40%;
+    --band-developing: 36 92% 42%;
+    --band-emerging: 350 74% 50%;
 
-    --success: 160 78% 32%;
-    --warn: 35 88% 40%;
-    --danger: 350 72% 48%;
+    --success: 153 72% 34%;
+    --warn: 36 92% 42%;
+    --danger: 350 74% 50%;
 
     /* ---- Tint ---------------------------------------------------------- */
-    /* One token drives every translucent overlay in the product. In light
-       mode it is black, in dark mode white — so `bg-tint/[0.06]` is a subtle
-       wash in both, instead of white-on-white and therefore invisible. */
-    --tint: 265 40% 10%;
+    /* One token drives every translucent overlay. Black in light mode, white
+       in dark, so `bg-tint/[0.06]` is a subtle wash in both instead of being
+       invisible in one of them. */
+    --tint: 205 40% 10%;
 
     /* ---- Scrim --------------------------------------------------------- */
-    /* A modal backdrop must DARKEN the page in both themes — that is what
-       communicates "the thing behind is inert". It is therefore not derived
-       from the surface scale: `--bg-900` is near-white in light mode, so a
-       scrim built from it was a white wash that dimmed nothing and made the
-       sheet look broken. */
-    --scrim: 265 45% 12%;
+    /* A modal backdrop must DARKEN the page in both themes, so it is not
+       derived from the surface scale — that inverts. */
+    --scrim: 205 45% 12%;
 
     /* ---- Elevation ----------------------------------------------------- */
-    /* Light mode needs genuinely soft, wide shadows to convey lift. Dark mode
-       uses near-black shadows that would be invisible here. */
-    --shadow-color: 265 35% 45%;
+    --shadow-color: 160 30% 30%;
     --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.06),
       0 4px 14px -4px hsl(var(--shadow-color) / 0.1);
     --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.06),
@@ -121,70 +123,78 @@
       0 24px 56px -16px hsl(var(--shadow-color) / 0.2);
     --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.6);
 
-    /* Decorative grid + ambient glow, tuned per theme. */
-    --grid-line: 265 20% 20%;
-    --grid-alpha: 0.045;
-    --glow-alpha: 0.07;
+    --grid-line: 160 25% 25%;
+    --grid-alpha: 0.05;
+    --glow-alpha: 0.09;
 
     color-scheme: light;
   }
 
   .dark {
     /* ---- Surfaces ------------------------------------------------------ */
-    /* Not #0A0A0F. The hue is violet-warm, and the steps between surfaces are
-       small and even so elevation reads without a single hard line. */
-    --bg: 265 24% 5%;
-    --bg-50: 265 20% 10%;
-    --bg-100: 265 21% 8%;
-    --bg-200: 265 22% 7%;
-    --bg-900: 265 28% 3%;
+    /* Cool slate, NOT green-tinted. A green-tinted dark ground looks sickly;
+       neutral-cool with vivid green accents is what stays premium. */
+    --bg: 205 32% 5%;
+    --bg-50: 204 24% 10%;
+    --bg-100: 204 26% 8%;
+    --bg-200: 205 28% 7%;
+    --bg-900: 206 36% 3%;
 
-    --surface: 265 20% 8%;
-    --surface-raised: 265 18% 11%;
-    --surface-overlay: 264 16% 14%;
-    --surface-hover: 264 15% 16%;
+    --surface: 204 26% 8%;
+    --surface-raised: 204 22% 11%;
+    --surface-overlay: 203 20% 14%;
+    --surface-hover: 203 19% 16%;
 
     /* ---- Lines --------------------------------------------------------- */
-    --line: 265 15% 18%;
-    --line-strong: 265 14% 25%;
+    --line: 204 18% 18%;
+    --line-strong: 204 16% 26%;
 
     /* ---- Text ---------------------------------------------------------- */
-    /* Warm off-white. Pure #FFF on a dark ground glares and causes halation
+    /* Slightly cool off-white. Pure #FFF on dark glares and causes halation
        on long text — a real problem on an interview screen at 1am. */
-    --ink: 45 30% 96%;
-    --ink-muted: 265 10% 70%;
-    --ink-subtle: 265 9% 52%;
-    --ink-faint: 265 9% 38%;
+    --ink: 170 25% 96%;
+    --ink-muted: 204 12% 70%;
+    --ink-subtle: 204 10% 52%;
+    --ink-faint: 204 10% 38%;
 
-    /* ---- Brand --------------------------------------------------------- */
-    --brand-50: 258 90% 96%;
-    --brand-100: 258 90% 92%;
-    --brand-300: 258 95% 80%;
-    --brand-400: 258 92% 72%;
-    --brand-500: 258 90% 66%;
-    --brand-600: 258 84% 58%;
-    --brand-700: 258 78% 50%;
-    --brand-900: 258 60% 30%;
+    /* ---- Brand — green ------------------------------------------------- */
+    --brand-50: 150 80% 96%;
+    --brand-100: 150 78% 90%;
+    --brand-300: 152 76% 72%;
+    --brand-400: 152 78% 58%;
+    --brand-500: 152 76% 48%;
+    --brand-600: 153 74% 40%;
+    --brand-700: 155 74% 32%;
+    --brand-900: 158 62% 20%;
 
-    --accent-cyan: 188 92% 62%;
-    --accent-teal: 172 80% 55%;
-    --accent-fuchsia: 300 92% 70%;
-    --accent-amber: 36 96% 62%;
+    --accent-cyan: 190 92% 60%;
+    --accent-teal: 172 82% 55%;
+    --accent-lime: 88 76% 58%;
+    --accent-amber: 40 96% 60%;
+
+
+    /* Dark mode inverts the relationship instead of darkening further: a
+       bright green fill with near-black text. Darkening the green until white
+       passed would have produced a muddy button on a dark ground; bright fill
+       + dark ink is what Spotify and Duolingo do, and it measures 10.17:1. */
+    --cta-bg: 152 76% 52%;
+    --cta-bg-hover: 152 80% 58%;
+    --cta-fg: 160 45% 8%;
 
     /* ---- Score bands --------------------------------------------------- */
-    --band-exceptional: 158 72% 55%;
-    --band-strong: 188 88% 60%;
-    --band-developing: 40 94% 62%;
+    --band-exceptional: 152 72% 55%;
+    --band-strong: 200 92% 62%;
+    --band-developing: 40 96% 60%;
     --band-emerging: 350 90% 70%;
 
-    --success: 158 72% 55%;
-    --warn: 40 94% 62%;
+    --success: 152 72% 55%;
+    --warn: 40 96% 60%;
     --danger: 350 90% 70%;
 
     --tint: 0 0% 100%;
-    --scrim: 265 50% 2%;
+    --scrim: 205 50% 2%;
 
-    --shadow-color: 265 60% 2%;
+    --shadow-color: 205 60% 2%;
     --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.5),
       0 4px 16px -4px hsl(var(--shadow-color) / 0.55);
     --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.5),
@@ -195,7 +205,7 @@
 
     --grid-line: 0 0% 100%;
     --grid-alpha: 0.035;
-    --glow-alpha: 0.1;
+    --glow-alpha: 0.12;
 
     color-scheme: dark;
   }

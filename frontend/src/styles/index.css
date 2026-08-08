@@ -228,7 +228,7 @@
     @apply bg-gradient-to-br from-ink via-ink to-ink-muted bg-clip-text text-transparent;
   }
   .text-gradient-brand {
-    @apply bg-gradient-to-br from-brand-500 via-accent-fuchsia to-accent-cyan bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-brand-500 via-accent-lime to-accent-cyan bg-clip-text text-transparent;
   }
 
   /* Fades a decorative grid out toward the edges so it never competes with

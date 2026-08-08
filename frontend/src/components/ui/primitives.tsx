@@ -33,14 +33,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // The one primary action per screen. Deliberately the only element
-        // that gets a glow — scarcity is what makes it read as "the" action.
         // The one primary action per screen. It is the only element that
         // gets a glow *and* the only one with a sheen — scarcity is what
         // makes it read as "the" action rather than decoration.
+        //
+        // `bg-cta`/`text-cta-fg` rather than a brand step: the fill/text
+        // relationship INVERTS between themes (dark green + white in light,
+        // bright green + dark ink in dark), and one colour cannot serve both
+        // and stay accessible.
         primary: cn(
-          'group/btn relative overflow-hidden bg-brand-600 text-white shadow-glow',
-          'hover:bg-brand-500 hover:shadow-glow-lg',
+          'group/btn relative overflow-hidden bg-cta text-cta-fg shadow-glow',
+          'hover:bg-cta-hover hover:shadow-glow-lg',
           'active:scale-[0.985]',
         ),
         secondary: cn(

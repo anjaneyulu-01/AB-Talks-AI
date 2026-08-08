@@ -81,7 +81,7 @@ export function Aurora({ className }: { className?: string }) {
     },
     {
       className:
-        'right-[4%] top-[8%] size-[34rem] bg-accent-fuchsia/[0.22] dark:bg-accent-fuchsia/[0.12]',
+        'right-[4%] top-[8%] size-[34rem] bg-accent-lime/[0.22] dark:bg-accent-lime/[0.12]',
       animate: { x: [0, -50, 30, 0], y: [0, 50, -20, 0] },
       duration: 26,
     },
@@ -204,7 +204,7 @@ export function GradientBorder({
     <div
       className={cn(
         'relative rounded-[1.2rem] p-px',
-        'bg-gradient-to-br from-brand-500/40 via-accent-fuchsia/20 to-accent-cyan/30',
+        'bg-gradient-to-br from-brand-500/40 via-accent-lime/20 to-accent-cyan/30',
         glow && 'shadow-[0_0_40px_-12px_hsl(var(--brand-500)/0.5)]',
         className,
       )}

@@ -49,7 +49,7 @@ export function Underline({
         <defs>
           <linearGradient id="underline-gradient" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="hsl(var(--brand-500))" />
-            <stop offset="55%" stopColor="hsl(var(--accent-fuchsia))" />
+            <stop offset="55%" stopColor="hsl(var(--accent-lime))" />
             <stop offset="100%" stopColor="hsl(var(--accent-cyan))" />
           </linearGradient>
         </defs>

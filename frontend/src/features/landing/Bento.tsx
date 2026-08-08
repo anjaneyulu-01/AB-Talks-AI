@@ -181,7 +181,7 @@ export function Bento() {
               className={cn(
                 'flex-1 rounded-t-md',
                 i === 5
-                  ? 'bg-gradient-to-t from-brand-500 to-accent-fuchsia'
+                  ? 'bg-gradient-to-t from-brand-500 to-accent-lime'
                   : 'bg-brand-500/30',
               )}
             />
@@ -224,8 +224,8 @@ export function Bento() {
       <Cell className="lg:col-span-4" index={4}>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="min-w-0 flex-1">
-            <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-accent-fuchsia/25 bg-accent-fuchsia/[0.06]">
-              <Sparkles className="size-5 text-accent-fuchsia" />
+            <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-accent-lime/25 bg-accent-lime/[0.06]">
+              <Sparkles className="size-5 text-accent-lime" />
             </div>
             <CellTitle>Every score shows its working</CellTitle>
             <CellBody>
@@ -252,7 +252,7 @@ export function Bento() {
                     whileInView={{ width: `${value}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.25 + i * 0.1, ease: EASE_OUT }}
-                    className="h-full rounded-full bg-gradient-to-r from-brand-500 via-accent-fuchsia to-accent-cyan"
+                    className="h-full rounded-full bg-gradient-to-r from-brand-500 via-accent-lime to-accent-cyan"
                   />
                 </div>
               </div>
