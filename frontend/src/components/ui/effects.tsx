@@ -194,12 +194,34 @@ export function GradientBorder({
   className,
   innerClassName,
   glow = false,
+  animated = true,
 }: {
   children: ReactNode
   className?: string
   innerClassName?: string
   glow?: boolean
+  /** Rotate the border gradient. On by default — a living edge is the whole
+   *  point of wrapping the hero demo in one. */
+  animated?: boolean
 }) {
+  if (animated) {
+    // `.gradient-ring` paints a conic gradient that rotates around the edge,
+    // masked to a 1px band. The heavy lifting is in index.css.
+    return (
+      <div
+        className={cn(
+          'gradient-ring',
+          glow && 'shadow-[0_0_50px_-12px_hsl(var(--brand-500)/0.45)]',
+          className,
+        )}
+      >
+        <div className={cn('h-full rounded-[1.05rem] bg-surface', innerClassName)}>
+          {children}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       className={cn(

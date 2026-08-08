@@ -232,7 +232,10 @@ function CandidateCard({ candidate, index }: { candidate: CandidateListItem; ind
       transition={{ duration: 0.4, delay: Math.min(index * 0.035, 0.4), ease: [0.22, 1, 0.36, 1] }}
     >
       <Link to={`/candidates/${candidate.id}`} className="block h-full rounded-2xl">
-        <Card hover className="group flex h-full flex-col p-5">
+        {/* Frosted glass that floats and glows on hover, rather than a flat
+            panel. On /dashboard this is the first grid a judge sees, so the
+            lift is worth the extra paint. */}
+        <div className="glass-card lift-glow group flex h-full flex-col p-5">
           <div className="flex items-start gap-3">
             <Avatar name={candidate.name} tint={avatarTint(candidate.id)} />
             <div className="min-w-0 flex-1">
@@ -273,7 +276,7 @@ function CandidateCard({ candidate, index }: { candidate: CandidateListItem; ind
             </div>
             <ArrowRight className="size-3.5 text-ink-faint transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-400" />
           </div>
-        </Card>
+        </div>
       </Link>
     </motion.div>
   )

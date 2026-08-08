@@ -171,6 +171,23 @@ export default {
           from: { opacity: '0', transform: 'translateY(6px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        // A living gradient — pans the background position so a multi-hue fill
+        // drifts slowly. Used on the primary CTA and hero accents so colour
+        // feels alive rather than painted on. Needs bg-[length:200%_200%].
+        'gradient-pan': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        // A conic sheen rotating behind a card — the "premium animated border"
+        // effect, driven by an angle custom property.
+        'border-spin': {
+          to: { '--border-angle': '360deg' },
+        },
+        // Slow colour-cycling glow for floating accents.
+        'glow-pulse': {
+          '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
+          '50%': { opacity: '0.9', transform: 'scale(1.08)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.5s var(--ease-out-expo) both',
@@ -180,6 +197,8 @@ export default {
         breathe: 'breathe 2.4s ease-in-out infinite',
         sheen: 'sheen 1.1s var(--ease-out-expo)',
         'slide-up-fade': 'slide-up-fade 0.3s var(--ease-out-expo) both',
+        'gradient-pan': 'gradient-pan 6s ease-in-out infinite',
+        'glow-pulse': 'glow-pulse 4s ease-in-out infinite',
       },
 
       transitionTimingFunction: {

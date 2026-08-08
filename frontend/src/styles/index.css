@@ -4,6 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Registering `--border-angle` as a typed custom property is what lets it be
+  animated at all — the browser cannot interpolate a bare `--x`, but it can
+  interpolate one typed as `<angle>`. This drives the rotating gradient ring.
+  Harmless in browsers that don't support @property; the ring just sits still.
+*/
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @layer base {
   :root {
     /* Easing curves as variables so keyframe animations in the Tailwind
@@ -133,8 +145,81 @@
     @apply hover:-translate-y-0.5 hover:border-line-strong hover:shadow-raised;
   }
 
+  /* Frosted glass. Semi-transparent surface + heavy blur so whatever colour
+     drifts behind it (aurora, glow) shows through as a tint. This is what makes
+     a card read as floating GLASS rather than a flat panel. */
   .glass {
     @apply border border-line bg-surface/70 backdrop-blur-xl;
+  }
+
+  /* The premium glass card: a frosted body with a faint brand-tinted top edge
+     and a soft coloured inner glow. Reads as an object lit from within. */
+  .glass-card {
+    @apply relative overflow-hidden rounded-2xl border backdrop-blur-xl;
+    background: linear-gradient(
+      180deg,
+      hsl(var(--surface) / 0.82),
+      hsl(var(--surface) / 0.7)
+    );
+    border-color: hsl(var(--brand-500) / 0.18);
+    box-shadow:
+      var(--shadow-soft),
+      inset 0 1px 0 hsl(var(--brand-400) / 0.12);
+  }
+
+  /* Coloured hover lift. Neutral shadows say "raised"; a brand-tinted glow says
+     "alive". Kept subtle so a whole grid of them does not turn into a rave. */
+  .lift-glow {
+    @apply transition-all duration-300 ease-premium;
+  }
+  .lift-glow:hover {
+    transform: translateY(-3px);
+    border-color: hsl(var(--brand-500) / 0.4);
+    box-shadow:
+      var(--shadow-raised),
+      0 12px 40px -12px hsl(var(--brand-500) / 0.35);
+  }
+
+  /*
+    Animated gradient border.
+
+    A conic gradient sweeps around the element, revealed only at the 1px edge by
+    a mask that punches out the interior. The rotation is driven by an
+    @property angle so it can be GPU-animated. This is the "expensive animated
+    border" you see on Linear / Vercel feature cards.
+  */
+  .gradient-ring {
+    position: relative;
+    border-radius: 1.125rem;
+  }
+  .gradient-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--border-angle, 0deg),
+      hsl(var(--brand-500) / 0.6),
+      hsl(var(--accent-lime) / 0.5),
+      hsl(var(--accent-cyan) / 0.6),
+      hsl(var(--band-strong) / 0.5),
+      hsl(var(--brand-500) / 0.6)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: border-spin 6s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gradient-ring::before {
+      animation: none;
+    }
   }
 
   /* Small uppercase labels. Used for section eyebrows and metric captions. */
@@ -248,9 +333,20 @@
       hsl(var(--brand-500)),
       hsl(var(--accent-lime)),
       hsl(var(--accent-cyan)),
-      hsl(var(--band-strong))
+      hsl(var(--band-strong)),
+      hsl(var(--brand-500))
     );
-    @apply bg-clip-text text-transparent;
+    /* Oversized so there is room to pan. The slow drift makes the colour feel
+       alive without ever moving fast enough to distract from reading. Purely
+       decorative clip-text, so no contrast concern. */
+    background-size: 220% 220%;
+    @apply animate-gradient-pan bg-clip-text text-transparent;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .text-gradient-brand {
+      @apply animate-none;
+      background-position: 0% 50%;
+    }
   }
 
   /* Fades a decorative grid out toward the edges so it never competes with
