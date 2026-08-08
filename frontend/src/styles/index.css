@@ -227,8 +227,30 @@
   .text-gradient {
     @apply bg-gradient-to-br from-ink via-ink to-ink-muted bg-clip-text text-transparent;
   }
+
+  /*
+    The brand gradient interpolates `in oklch` rather than the default sRGB.
+    sRGB interpolation dips through a muddy, desaturated midpoint between two
+    saturated hues; OKLCH is perceptually uniform, so the transition stays
+    vivid the whole way across. It is the same technique Tailwind v4 and Linear
+    use, and it is the single biggest lever on how "expensive" a multi-hue
+    gradient looks.
+
+    Four stops — green → lime → cyan → sky — for a richer sweep than a two-stop
+    ramp. This only ever paints decorative fills and clipped display text, so
+    it carries no contrast risk.
+
+    `in oklch` is supported in every browser since early 2023.
+  */
   .text-gradient-brand {
-    @apply bg-gradient-to-br from-brand-500 via-accent-lime to-accent-cyan bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg in oklch,
+      hsl(var(--brand-500)),
+      hsl(var(--accent-lime)),
+      hsl(var(--accent-cyan)),
+      hsl(var(--band-strong))
+    );
+    @apply bg-clip-text text-transparent;
   }
 
   /* Fades a decorative grid out toward the edges so it never competes with

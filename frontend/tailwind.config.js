@@ -132,8 +132,10 @@ export default {
       backgroundImage: {
         'grid-fade':
           'linear-gradient(to bottom, hsl(var(--grid-line) / var(--grid-alpha)) 1px, transparent 1px), linear-gradient(to right, hsl(var(--grid-line) / var(--grid-alpha)) 1px, transparent 1px)',
+        // Interpolated `in oklch` for the same reason as `.text-gradient-brand`
+        // — the midpoint between the two hues stays vivid instead of muddying.
         'brand-sheen':
-          'linear-gradient(135deg, hsl(var(--brand-500) / 0.14) 0%, hsl(var(--accent-cyan) / 0.08) 50%, transparent 100%)',
+          'linear-gradient(135deg in oklch, hsl(var(--brand-500) / 0.16) 0%, hsl(var(--accent-lime) / 0.1) 45%, hsl(var(--accent-cyan) / 0.06) 75%, transparent 100%)',
       },
       backgroundSize: { grid: '56px 56px' },
 
