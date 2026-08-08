@@ -55,6 +55,11 @@ export default {
         accent: {
           cyan: withAlpha('--accent-cyan'),
           teal: withAlpha('--accent-teal'),
+          // The third aurora hue. Violet→cyan alone is a cold two-stop ramp;
+          // fuchsia gives the gradient a warm centre, which is what makes it
+          // read as depth rather than as a CSS gradient.
+          fuchsia: withAlpha('--accent-fuchsia'),
+          amber: withAlpha('--accent-amber'),
         },
 
         /**

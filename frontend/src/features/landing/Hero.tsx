@@ -3,24 +3,34 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { CountUp } from '@/components/ui/ScoreRing'
-import { Aurora, GradientBorder, ScrollCue, TiltCard } from '@/components/ui/effects'
+import { Aurora, GradientBorder, TiltCard } from '@/components/ui/effects'
 import { Badge, Button, Container } from '@/components/ui/primitives'
+import { FloatingEvidence, Underline } from '@/features/landing/HeroAccents'
 import { LiveDemo } from '@/features/landing/LiveDemo'
 import { EASE_OUT } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 /**
- * Hero.
+ * Hero — split layout.
  *
- * The headline animates in word by word rather than as a block. It costs
- * nothing and buys a beat of attention on the one sentence that has to land —
- * but the words are laid out in normal flow with `inline-block` wrappers, so
- * they wrap naturally at 390px and the sentence is still selectable text
- * rather than a pile of positioned spans.
+ * Previously centred, with the demo stacked underneath and therefore below the
+ * fold on most laptops. Splitting it puts the argument and the proof of the
+ * argument on screen together, which is the whole point of having a live demo.
+ *
+ * Copy sits left and reads left-aligned, not centred: centred body text is
+ * harder to scan because every line starts in a different place, and this
+ * paragraph is doing real explanatory work.
+ *
+ * Note on the headline: per-word animation and gradient text cannot be
+ * combined. `text-gradient` sets `bg-clip-text` + `text-transparent`, and an
+ * `inline-block` child establishes its own box that the parent's clipped
+ * background never paints through — the word inherits transparent colour with
+ * no background and renders as nothing. That shipped once and cost the page
+ * its entire headline. Line one animates per word in a solid colour; the
+ * accent phrase gets a drawn underline instead of a gradient fill.
  */
 
-const HEADLINE_A = ['Find', 'out', 'if', "you're", 'ready']
-const HEADLINE_B = ['before', 'it', 'counts.']
+const HEADLINE = ['Find', 'out', 'if', "you're"]
 
 export function Hero() {
   const reduceMotion = useReducedMotion()
@@ -32,123 +42,127 @@ export function Hero() {
   })
 
   return (
-    <section className="relative overflow-hidden pt-16">
-      {/* Layered background: drifting aurora mesh underneath, masked grid on
-          top. The grid gives the soft colour something to register against —
-          without it the gradient reads as a smudge rather than as depth. */}
+    <section className="relative overflow-hidden pt-24 sm:pt-28">
+      {/* Drifting aurora underneath, masked grid on top. The grid gives the
+          soft colour something to register against — without it the gradient
+          reads as a smudge rather than as depth. */}
       <Aurora />
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="mask-fade-radial absolute inset-0 bg-grid-fade bg-grid opacity-70" />
       </div>
 
-      <Container className="relative py-14 sm:py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE_OUT }}
-          >
-            <Badge tone="brand" size="md" className="mb-6">
-              <Sparkles className="size-3" />
-              Built for the ABTalks AI Cohort
-            </Badge>
-          </motion.div>
+      <Container className="relative pb-16 pt-6 sm:pb-24 sm:pt-10">
+        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.08fr] lg:gap-10 xl:gap-16">
+          {/* --------------------------------------------------------- Copy */}
+          <div className="text-center lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: EASE_OUT }}
+            >
+              <Badge tone="brand" size="md" className="mb-6">
+                <Sparkles className="size-3" />
+                Built for the ABTalks AI Cohort
+              </Badge>
+            </motion.div>
 
-          <h1 className="text-display text-gradient">
-            {HEADLINE_A.map((w, i) => (
-              <motion.span
-                key={w}
-                {...word(0.1 + i * 0.06)}
-                className="inline-block [will-change:transform,opacity]"
-              >
-                {w}
-                {i < HEADLINE_A.length - 1 && ' '}
-              </motion.span>
-            ))}
-            <br />
-            <span className="text-gradient-brand">
-              {HEADLINE_B.map((w, i) => (
+            <h1 className="text-display text-ink">
+              {HEADLINE.map((w, i) => (
                 <motion.span
                   key={w}
-                  {...word(0.34 + i * 0.06)}
+                  {...word(0.1 + i * 0.06)}
                   className="inline-block [will-change:transform,opacity]"
                 >
                   {w}
-                  {i < HEADLINE_B.length - 1 && ' '}
+                  {' '}
                 </motion.span>
               ))}
-            </span>
-          </h1>
+              <motion.span
+                {...word(0.34)}
+                className="inline-block [will-change:transform,opacity]"
+              >
+                <Underline delay={0.85}>ready</Underline>
+              </motion.span>
+              <br />
+              <motion.span
+                {...word(0.46)}
+                className="inline-block text-ink-muted [will-change:transform,opacity]"
+              >
+                before it counts.
+              </motion.span>
+            </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5, ease: EASE_OUT }}
-            className="mx-auto mt-6 max-w-2xl text-lead text-ink-muted"
-          >
-            An AI interviewer that has actually read your cohort record. It knows which
-            missions you aced, which took you five attempts, and which you skipped — and
-            it builds every question from that.
-          </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.55, ease: EASE_OUT }}
+              className="mx-auto mt-7 max-w-xl text-lead text-ink-muted lg:mx-0"
+            >
+              An AI interviewer that has actually read your cohort record. It knows which
+              missions you aced, which took you five attempts, and which you skipped — and
+              it builds every question from that.
+            </motion.p>
 
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.65, ease: EASE_OUT }}
+              className="mt-9 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start"
+            >
+              <Link to="/dashboard">
+                <Button variant="primary" size="lg" className="w-full sm:w-auto">
+                  Start your interview
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+              <a href="#how-it-works">
+                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                  See how it works
+                </Button>
+              </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start"
+            >
+              {['No setup', 'Adapts in real time', 'Report in 20 minutes'].map((item) => (
+                <span
+                  key={item}
+                  className="flex items-center gap-1.5 text-xs text-ink-faint"
+                >
+                  <span className="size-1 rounded-full bg-band-exceptional" />
+                  {item}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* --------------------------------------------------------- Demo */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6, ease: EASE_OUT }}
-            className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
+            initial={{ opacity: 0, y: 28, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: EASE_OUT }}
+            className="relative"
           >
-            <Link to="/dashboard">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto">
-                Start your interview
-                <ArrowRight className="size-4" />
-              </Button>
-            </Link>
-            <a href="#how-it-works">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                See how it works
-              </Button>
-            </a>
+            {/* Real cohort rows orbiting the demo — the decoration is also the
+                argument, since this is the data the demo derives from. */}
+            <FloatingEvidence />
+
+            <TiltCard max={3}>
+              <GradientBorder glow>
+                <LiveDemo />
+              </GradientBorder>
+            </TiltCard>
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.75 }}
-            className="mt-5 text-xs text-ink-faint"
-          >
-            No setup · Adapts in real time · Full report in under 20 minutes
-          </motion.p>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: EASE_OUT }}
-          className="mx-auto mt-12 max-w-4xl sm:mt-16"
-        >
-          {/* Tilt + gradient border, together. The border makes the demo read
-              as the page's centrepiece; the tilt gives it a physical response
-              so it feels like an object rather than a picture of one. Both
-              disable themselves on touch and under reduced motion. */}
-          <TiltCard max={3}>
-            <GradientBorder glow>
-              <LiveDemo />
-            </GradientBorder>
-          </TiltCard>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.6 }}
-          className="mt-14 hidden justify-center sm:flex"
-        >
-          <ScrollCue />
-        </motion.div>
       </Container>
     </section>
   )
 }
+
 
 /**
  * Proof strip.

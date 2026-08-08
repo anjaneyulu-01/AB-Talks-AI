@@ -4,11 +4,11 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Logo } from '@/components/ui/Logo'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Aurora, Grain, Marquee } from '@/components/ui/effects'
 import { Badge, Button, Card, Container } from '@/components/ui/primitives'
 import { Bento } from '@/features/landing/Bento'
 import { Hero, ProofStrip } from '@/features/landing/Hero'
+import { PillNav } from '@/features/landing/PillNav'
 import { DerivationStrip } from '@/features/landing/LiveDemo'
 import { StepFlow } from '@/features/landing/StepFlow'
 import { EASE_OUT, revealOnScroll, staggerContainer, staggerDelay } from '@/lib/motion'
@@ -24,7 +24,8 @@ import { cn } from '@/lib/utils'
  * The rhythm now alternates deliberately, and the ground colour changes with
  * it so scrolling has a pulse:
  *
- *   hero          live demo, aurora mesh, tilt + gradient border
+ *   nav           floating pill, detached from the viewport edge
+ *   hero          split layout — copy left, live demo right, evidence chips
  *   marquee       infinite ticker of the real stack
  *   proof         thin bordered strip, dense real numbers
  *   the gap       purely editorial — no cards at all
@@ -46,7 +47,7 @@ export function LandingPage() {
           because nothing physical is that smooth — a few percent of noise is
           what makes large colour fields feel like a material. */}
       <Grain />
-      <Nav />
+      <PillNav />
       <Hero />
       <TechMarquee />
       <ProofStrip />
@@ -106,7 +107,10 @@ function TechMarquee() {
  */
 function Capabilities() {
   return (
-    <section className="relative overflow-hidden border-y border-line bg-surface/40 py-20 sm:py-28">
+    <section
+      id="capabilities"
+      className="relative scroll-mt-24 overflow-hidden border-y border-line bg-surface/40 py-20 sm:py-28"
+    >
       <Aurora className="opacity-50" />
       <Container className="relative">
         <SectionHead
@@ -119,34 +123,6 @@ function Capabilities() {
         </div>
       </Container>
     </section>
-  )
-}
-
-/* -------------------------------------------------------------------- Nav */
-
-function Nav() {
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-line/60 bg-base/70 backdrop-blur-xl">
-      <Container className="flex h-16 items-center justify-between gap-3">
-        <Link to="/" className="flex min-w-0 items-center gap-2.5 rounded-lg">
-          <Logo className="size-7 shrink-0" />
-          <span className="truncate text-[0.9375rem] font-semibold tracking-tight text-ink">
-            ABTalks <span className="font-normal text-ink-subtle">Interview</span>
-          </span>
-        </Link>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <ThemeToggle />
-          <Link to="/dashboard">
-            <Button variant="primary" size="sm">
-              <span className="hidden sm:inline">Start an interview</span>
-              <span className="sm:hidden">Start</span>
-              <ArrowRight className="size-3.5" />
-            </Button>
-          </Link>
-        </div>
-      </Container>
-    </header>
   )
 }
 
@@ -246,7 +222,7 @@ function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative border-y border-line bg-surface/40 py-20 sm:py-28"
+      className="relative scroll-mt-24 border-y border-line bg-surface/40 py-20 sm:py-28"
     >
       <Container>
         <SectionHead eyebrow="How it works" title="Four steps. No black box." />
@@ -424,7 +400,7 @@ const VOICES = [
 /** Offset columns rather than a flat grid — reads as editorial, not tabular. */
 function Voices() {
   return (
-    <section className="relative py-20 sm:py-28">
+    <section id="voices" className="relative scroll-mt-24 py-20 sm:py-28">
       <Container>
         <SectionHead
           eyebrow="From the cohort"
@@ -499,7 +475,10 @@ function FinalCta() {
             <Logo className="mx-auto size-14" />
           </motion.div>
 
-          <h2 className="mt-7 text-h1 text-gradient">
+          {/* Outer heading is a SOLID colour, not a gradient. Nesting one
+              `bg-clip-text` element inside another is unreliable — the inner
+              clip can swallow the outer's paint and leave transparent text. */}
+          <h2 className="mt-7 text-h1 text-ink">
             One interview.{' '}
             <span className="text-gradient-brand">A real answer.</span>
           </h2>

@@ -68,19 +68,26 @@ export function Grain({ opacity = 0.035 }: { opacity?: number }) {
 export function Aurora({ className }: { className?: string }) {
   const reduceMotion = useReducedMotion()
 
+  // Opacities are set per theme, not shared. A 16% violet orb blurred over a
+  // near-black ground reads as depth; the same orb over warm white reads as a
+  // faint smudge — light backgrounds need roughly twice the saturation to
+  // register at all, which is why the first pass looked washed out.
   const orbs = [
     {
-      className: 'left-[10%] top-[-10%] size-[38rem] bg-brand-500/[0.16]',
+      className:
+        'left-[8%] top-[-12%] size-[40rem] bg-brand-500/[0.30] dark:bg-brand-500/[0.16]',
       animate: { x: [0, 60, -30, 0], y: [0, 40, 20, 0] },
       duration: 22,
     },
     {
-      className: 'right-[5%] top-[10%] size-[32rem] bg-accent-fuchsia/[0.12]',
+      className:
+        'right-[4%] top-[8%] size-[34rem] bg-accent-fuchsia/[0.22] dark:bg-accent-fuchsia/[0.12]',
       animate: { x: [0, -50, 30, 0], y: [0, 50, -20, 0] },
       duration: 26,
     },
     {
-      className: 'left-[35%] top-[35%] size-[34rem] bg-accent-cyan/[0.10]',
+      className:
+        'left-[32%] top-[38%] size-[36rem] bg-accent-cyan/[0.20] dark:bg-accent-cyan/[0.10]',
       animate: { x: [0, 40, -50, 0], y: [0, -30, 40, 0] },
       duration: 19,
     },

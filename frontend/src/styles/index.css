@@ -211,11 +211,24 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 
+  /*
+    Gradient text.
+
+    WARNING: `bg-clip-text` + `text-transparent` only paints through *inline*
+    descendants. Wrap a word in an `inline-block` (to animate its transform)
+    and that word becomes invisible — it inherits `color: transparent` with no
+    background of its own. This shipped once and cost the landing page its
+    entire headline.
+
+    Rules: never nest one of these inside the other, and never put an
+    inline-block/flex/grid child inside one. Animate the gradient element
+    itself instead.
+  */
   .text-gradient {
     @apply bg-gradient-to-br from-ink via-ink to-ink-muted bg-clip-text text-transparent;
   }
   .text-gradient-brand {
-    @apply bg-gradient-to-br from-brand-300 via-brand-400 to-accent-cyan bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-brand-500 via-accent-fuchsia to-accent-cyan bg-clip-text text-transparent;
   }
 
   /* Fades a decorative grid out toward the edges so it never competes with
