@@ -2,8 +2,8 @@ import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'fr
 import { BrainCircuit, FileCheck2, Layers, Target } from 'lucide-react'
 import { useRef } from 'react'
 
+import { GradientTile } from '@/components/ui/GradientTile'
 import { EASE_OUT } from '@/lib/motion'
-import { cn } from '@/lib/utils'
 
 /**
  * The four-step flow, as a connected vertical sequence.
@@ -22,6 +22,7 @@ const STEPS = [
   {
     n: '01',
     icon: Layers,
+    gradient: 'from-brand-500 to-accent-violet',
     title: 'It reads your record first',
     body: 'Before a single question, all 31 days of your cohort history become an evidence profile: what you mastered first try, what took five attempts, what you never touched.',
     detail: 'Deterministic — no model involved yet',
@@ -29,6 +30,7 @@ const STEPS = [
   {
     n: '02',
     icon: Target,
+    gradient: 'from-accent-cyan to-accent-sky',
     title: 'It plans your interview',
     body: 'Topics are allocated to question slots before you start, each bound to a real curriculum day and objective. That is why it never repeats itself and never drifts off-syllabus.',
     detail: 'Guaranteed coverage across six competencies',
@@ -36,6 +38,7 @@ const STEPS = [
   {
     n: '03',
     icon: BrainCircuit,
+    gradient: 'from-band-exceptional to-accent-teal',
     title: 'It adapts as you answer',
     body: 'A strong answer earns a harder question on the same topic. An incomplete one earns a targeted follow-up on exactly what you missed. Two weak turns and it moves on rather than grinding you down.',
     detail: 'And it tells you why, every time',
@@ -43,6 +46,7 @@ const STEPS = [
   {
     n: '04',
     icon: FileCheck2,
+    gradient: 'from-accent-amber to-warn',
     title: 'You get evidence, not a vibe',
     body: 'Every score traces back to the turn that produced it. Every gap comes with the curriculum day that closes it. The numbers are computed from your answers, not guessed at the end.',
     detail: 'Auditable, exportable, actionable',
@@ -92,19 +96,11 @@ export function StepFlow() {
             transition={{ duration: 0.5, delay: i * 0.06, ease: EASE_OUT }}
             className="group relative flex gap-4 sm:gap-6"
           >
-            {/* Marker */}
-            <div className="relative z-10 shrink-0 pt-1">
-              <div
-                className={cn(
-                  'flex size-12 items-center justify-center rounded-2xl sm:size-14',
-                  'border border-line-strong bg-surface text-brand-400 shadow-soft',
-                  'transition-all duration-400 ease-premium',
-                  'group-hover:border-brand-500/40 group-hover:text-brand-300',
-                  'group-hover:shadow-raised',
-                )}
-              >
-                <step.icon className="size-5" />
-              </div>
+            {/* Marker — a vivid gradient tile, one colour per step, so the flow
+                reads as a bright sequence. Sits on the surface so the scroll
+                spine passes behind it. */}
+            <div className="relative z-10 shrink-0 pt-1 transition-transform duration-400 ease-premium group-hover:-translate-y-0.5">
+              <GradientTile icon={step.icon} gradient={step.gradient} size="lg" />
             </div>
 
             <div className="min-w-0 flex-1 pb-8 pt-2">

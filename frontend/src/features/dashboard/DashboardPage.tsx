@@ -13,7 +13,6 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import {
-  Avatar,
   Badge,
   Card,
   Container,
@@ -21,10 +20,11 @@ import {
   Progress,
   Skeleton,
 } from '@/components/ui/primitives'
+import { GradientAvatar, GradientTile } from '@/components/ui/GradientTile'
 import { api } from '@/lib/api'
 import { cardGradient } from '@/lib/categoryColors'
 import type { CandidateListItem } from '@/lib/types'
-import { avatarTint, cn, pct } from '@/lib/utils'
+import { cn, pct } from '@/lib/utils'
 
 type SortKey = 'name' | 'coverage' | 'fluency'
 
@@ -84,18 +84,21 @@ export function DashboardPage() {
       <div className="mt-8 grid gap-3 sm:grid-cols-3">
         <SummaryTile
           icon={Users}
+          gradient="from-brand-500 to-accent-violet"
           label="Candidates"
           value={candidates?.length ?? '—'}
           hint="From the cohort dataset"
         />
         <SummaryTile
           icon={BookOpen}
+          gradient="from-accent-cyan to-accent-sky"
           label="Curriculum days"
           value={curriculum?.days.length ?? '—'}
           hint={curriculum?.cohort ?? 'Loading cohort'}
         />
         <SummaryTile
           icon={Layers}
+          gradient="from-band-exceptional to-accent-teal"
           label="Modules"
           value={curriculum?.modules.length ?? '—'}
           hint="Tooling through capstone"
@@ -194,23 +197,23 @@ export function DashboardPage() {
 }
 
 function SummaryTile({
-  icon: Icon,
+  icon,
+  gradient,
   label,
   value,
   hint,
 }: {
   icon: typeof Users
+  gradient: string
   label: string
   value: number | string
   hint: string
 }) {
   return (
     <Card hover className="flex items-center gap-4 p-5">
-      <div className="flex size-11 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/[0.07] text-brand-500">
-        <Icon className="size-5" />
-      </div>
+      <GradientTile icon={icon} gradient={gradient} size="md" />
       <div className="min-w-0">
-        <p className="nums text-2xl font-bold tracking-tight text-gradient-brand">{value}</p>
+        <p className="nums text-2xl font-bold tracking-tight text-ink">{value}</p>
         <p className="text-xs font-medium text-ink-muted">{label}</p>
         <p className="truncate text-[0.6875rem] text-ink-faint">{hint}</p>
       </div>
@@ -245,7 +248,7 @@ function CandidateCard({ candidate, index }: { candidate: CandidateListItem; ind
             )}
           />
           <div className="flex items-start gap-3">
-            <Avatar name={candidate.name} tint={avatarTint(candidate.id)} />
+            <GradientAvatar name={candidate.name} gradient={cardGradient(candidate.id)} />
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold text-ink">{candidate.name}</p>
               <p className="truncate text-xs text-ink-muted">{candidate.job_role}</p>

@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 
+import { GradientTile } from '@/components/ui/GradientTile'
 import { Spotlight } from '@/components/ui/effects'
 import { EASE_OUT, staggerDelay } from '@/lib/motion'
 import { cn } from '@/lib/utils'
@@ -77,9 +78,7 @@ export function Bento() {
       <Cell className="lg:col-span-4" index={0}>
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-brand-500/25 bg-brand-500/[0.06]">
-              <Layers className="size-5 text-brand-400" />
-            </div>
+            <GradientTile icon={Layers} gradient="from-brand-500 to-accent-violet" size="md" className="mb-4" />
             <CellTitle>Attempt count is the signal</CellTitle>
             <CellBody>
               A mission cleared on the fifth try is the highest-value question in your
@@ -127,9 +126,7 @@ export function Bento() {
 
       {/* --------------------------------------------------- Fairness (tall) */}
       <Cell className="lg:col-span-2 lg:row-span-2" index={1}>
-        <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-line-strong bg-tint/[0.04]">
-          <Ban className="size-5 text-ink-subtle" />
-        </div>
+        <GradientTile icon={Ban} gradient="from-ink-faint to-ink-subtle" size="md" className="mb-4" />
         <CellTitle>Skipped means skipped</CellTitle>
         <CellBody>
           Material you never covered is excluded from the question pool entirely —
@@ -162,9 +159,7 @@ export function Bento() {
 
       {/* -------------------------------------------------- Adaptation (wide) */}
       <Cell className="lg:col-span-2" index={2}>
-        <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-accent-cyan/25 bg-accent-cyan/[0.06]">
-          <Gauge className="size-5 text-accent-cyan" />
-        </div>
+        <GradientTile icon={Gauge} gradient="from-accent-cyan to-accent-sky" size="md" className="mb-4" />
         <CellTitle>Difficulty that moves</CellTitle>
         <CellBody>
           Strong answer, harder question. Incomplete one, a targeted follow-up.
@@ -192,9 +187,7 @@ export function Bento() {
 
       {/* ---------------------------------------------------- Reliability */}
       <Cell className="lg:col-span-2" index={3}>
-        <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-band-exceptional/25 bg-band-exceptional/[0.06]">
-          <ShieldCheck className="size-5 text-band-exceptional" />
-        </div>
+        <GradientTile icon={ShieldCheck} gradient="from-band-exceptional to-accent-teal" size="md" className="mb-4" />
         <CellTitle>It cannot break</CellTitle>
         <CellBody>
           Groq fails over to Gemini mid-sentence. If both are down, a deterministic
@@ -224,9 +217,7 @@ export function Bento() {
       <Cell className="lg:col-span-4" index={4}>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="min-w-0 flex-1">
-            <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-accent-lime/25 bg-accent-lime/[0.06]">
-              <Sparkles className="size-5 text-accent-lime" />
-            </div>
+            <GradientTile icon={Sparkles} gradient="from-accent-amber to-warn" size="md" className="mb-4" />
             <CellTitle>Every score shows its working</CellTitle>
             <CellBody>
               Scores are a weighted average over the turns that actually measured each

@@ -101,9 +101,11 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 0.55, ease: EASE_OUT }}
               className="mx-auto mt-7 max-w-xl text-lead text-ink-muted lg:mx-0"
             >
-              An AI interviewer that has actually read your cohort record. It knows which
-              missions you aced, which took you five attempts, and which you skipped — and
-              it builds every question from that.
+              Practice real technical interviews with an AI that has actually read your
+              ABTalks cohort record — it knows what you built, where you struggled, and what
+              you skipped, and it questions you exactly there. Twenty focused minutes, and
+              you'll know precisely where you stand and what to fix.{' '}
+              <span className="font-semibold text-ink">Walk in ready. Land the offer.</span>
             </motion.p>
 
             <motion.div
