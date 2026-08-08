@@ -39,11 +39,15 @@
 @layer base {
   :root {
     /* ---- Surfaces ------------------------------------------------------ */
-    --bg: 150 40% 98%;
-    --bg-50: 150 30% 96%;
-    --bg-100: 150 26% 94%;
-    --bg-200: 150 22% 92%;
-    --bg-900: 150 45% 99%;
+    /* Near-white, only a whisper of green. The previous 40%-saturation mint
+       made the whole page one flat wash and stopped white cards popping. A
+       clean base lets the aurora provide colour as distinct pools instead of
+       tinting everything uniformly. */
+    --bg: 160 24% 99%;
+    --bg-50: 158 20% 97%;
+    --bg-100: 156 18% 95%;
+    --bg-200: 155 16% 93%;
+    --bg-900: 165 30% 99.5%;
 
     /* Cards are pure white so they lift cleanly off the tinted ground. */
     --surface: 0 0% 100%;
@@ -80,6 +84,11 @@
        reading as one flat wash of brand colour. */
     --accent-lime: 92 68% 40%;
     --accent-amber: 36 92% 46%;
+    --accent-sky: 205 90% 48%;
+    /* Cool counterpoint to all the green — used ONLY in the decorative aurora,
+       never semantically, so it can add depth without competing with the
+       unified green meaning. */
+    --accent-violet: 262 78% 60%;
 
 
     /* ---- Primary CTA --------------------------------------------------- */
@@ -114,14 +123,16 @@
     --scrim: 205 45% 12%;
 
     /* ---- Elevation ----------------------------------------------------- */
-    --shadow-color: 160 30% 30%;
-    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.06),
-      0 4px 14px -4px hsl(var(--shadow-color) / 0.1);
-    --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.06),
-      0 12px 28px -8px hsl(var(--shadow-color) / 0.14);
-    --shadow-float: 0 8px 16px -4px hsl(var(--shadow-color) / 0.12),
-      0 24px 56px -16px hsl(var(--shadow-color) / 0.2);
-    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.6);
+    /* Green-tinted and a touch stronger, so white cards lift cleanly off the
+       near-white base with a soft coloured shadow rather than a flat grey one. */
+    --shadow-color: 165 55% 26%;
+    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.08),
+      0 6px 18px -6px hsl(var(--shadow-color) / 0.16);
+    --shadow-raised: 0 2px 6px hsl(var(--shadow-color) / 0.09),
+      0 16px 36px -10px hsl(var(--shadow-color) / 0.2);
+    --shadow-float: 0 10px 22px -6px hsl(var(--shadow-color) / 0.16),
+      0 30px 70px -18px hsl(var(--shadow-color) / 0.26);
+    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.7);
 
     --grid-line: 160 25% 25%;
     --grid-alpha: 0.05;
@@ -171,6 +182,8 @@
     --accent-teal: 172 82% 55%;
     --accent-lime: 88 76% 58%;
     --accent-amber: 40 96% 60%;
+    --accent-sky: 205 95% 62%;
+    --accent-violet: 262 90% 72%;
 
 
     /* Dark mode inverts the relationship instead of darkening further: a

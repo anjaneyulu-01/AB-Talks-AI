@@ -60,6 +60,9 @@ export default {
           // wash of brand colour.
           lime: withAlpha('--accent-lime'),
           amber: withAlpha('--accent-amber'),
+          // Aurora-only hues that add colour variety and depth. Not semantic.
+          sky: withAlpha('--accent-sky'),
+          violet: withAlpha('--accent-violet'),
         },
 
         /**

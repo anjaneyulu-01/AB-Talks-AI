@@ -68,28 +68,53 @@ export function Grain({ opacity = 0.035 }: { opacity?: number }) {
 export function Aurora({ className }: { className?: string }) {
   const reduceMotion = useReducedMotion()
 
-  // Opacities are set per theme, not shared. A 16% violet orb blurred over a
-  // near-black ground reads as depth; the same orb over warm white reads as a
-  // faint smudge — light backgrounds need roughly twice the saturation to
-  // register at all, which is why the first pass looked washed out.
+  // A rich multi-hue mesh rather than three shades of one colour. The earlier
+  // all-green aurora over a green-tinted page collapsed into a flat mint wash.
+  // Distinct, well-separated hues — green, sky, cyan and a warm amber pop —
+  // read as depth and colour VARIETY, which is what makes it feel premium
+  // instead of monochrome. A cool violet adds further depth without competing
+  // with the semantic green.
+  //
+  // Opacities are per-theme: light backgrounds need far more saturation to
+  // register than a dark ground does. They also move a little more than before
+  // so the colour visibly breathes.
   const orbs = [
     {
+      // Green — dominant, anchors the brand.
       className:
-        'left-[8%] top-[-12%] size-[40rem] bg-brand-500/[0.30] dark:bg-brand-500/[0.16]',
-      animate: { x: [0, 60, -30, 0], y: [0, 40, 20, 0] },
-      duration: 22,
+        'left-[2%] top-[-14%] size-[42rem] bg-brand-500/[0.42] dark:bg-brand-500/[0.20]',
+      animate: { x: [0, 70, -40, 0], y: [0, 50, 24, 0] },
+      duration: 21,
     },
     {
+      // Sky blue — the cool counterpoint that breaks the monotony.
       className:
-        'right-[4%] top-[8%] size-[34rem] bg-accent-lime/[0.22] dark:bg-accent-lime/[0.12]',
-      animate: { x: [0, -50, 30, 0], y: [0, 50, -20, 0] },
-      duration: 26,
+        'right-[-4%] top-[-6%] size-[38rem] bg-accent-sky/[0.30] dark:bg-accent-sky/[0.16]',
+      animate: { x: [0, -60, 34, 0], y: [0, 44, -26, 0] },
+      duration: 27,
     },
     {
+      // Cyan bridge between the green and the blue.
       className:
-        'left-[32%] top-[38%] size-[36rem] bg-accent-cyan/[0.20] dark:bg-accent-cyan/[0.10]',
-      animate: { x: [0, 40, -50, 0], y: [0, -30, 40, 0] },
-      duration: 19,
+        'left-[34%] top-[30%] size-[36rem] bg-accent-cyan/[0.26] dark:bg-accent-cyan/[0.13]',
+      animate: { x: [0, 50, -56, 0], y: [0, -34, 46, 0] },
+      duration: 18,
+    },
+    {
+      // Warm amber pop — small and lower-opacity, but it is what stops the whole
+      // field reading as cool. One warm note in a cool composition is the
+      // oldest trick for making colour feel considered.
+      className:
+        'right-[18%] bottom-[2%] size-[26rem] bg-accent-amber/[0.20] dark:bg-accent-amber/[0.10]',
+      animate: { x: [0, -34, 20, 0], y: [0, 28, -18, 0] },
+      duration: 24,
+    },
+    {
+      // Violet depth, cool and quiet.
+      className:
+        'left-[16%] bottom-[6%] size-[30rem] bg-accent-violet/[0.18] dark:bg-accent-violet/[0.12]',
+      animate: { x: [0, 44, -28, 0], y: [0, -30, 22, 0] },
+      duration: 30,
     },
   ]
 

@@ -84,9 +84,12 @@ export function Hero() {
                 <Underline delay={0.85}>ready</Underline>
               </motion.span>
               <br />
+              {/* The punchline carries the living green gradient rather than a
+                  muted grey — it is the emphasis of the whole headline, so it
+                  should hold the colour. */}
               <motion.span
                 {...word(0.46)}
-                className="inline-block text-ink-muted [will-change:transform,opacity]"
+                className="inline-block text-gradient-brand [will-change:transform,opacity]"
               >
                 before it counts.
               </motion.span>
