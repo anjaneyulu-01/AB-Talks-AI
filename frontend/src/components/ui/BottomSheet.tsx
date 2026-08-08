@@ -73,7 +73,7 @@ export function BottomSheet({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-base-900/70 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-50 bg-scrim/60 backdrop-blur-sm lg:hidden"
             aria-hidden
           />
 

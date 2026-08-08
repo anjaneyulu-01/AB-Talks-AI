@@ -96,6 +96,14 @@
        wash in both, instead of white-on-white and therefore invisible. */
     --tint: 265 40% 10%;
 
+    /* ---- Scrim --------------------------------------------------------- */
+    /* A modal backdrop must DARKEN the page in both themes — that is what
+       communicates "the thing behind is inert". It is therefore not derived
+       from the surface scale: `--bg-900` is near-white in light mode, so a
+       scrim built from it was a white wash that dimmed nothing and made the
+       sheet look broken. */
+    --scrim: 265 45% 12%;
+
     /* ---- Elevation ----------------------------------------------------- */
     /* Light mode needs genuinely soft, wide shadows to convey lift. Dark mode
        uses near-black shadows that would be invisible here. */
@@ -167,6 +175,7 @@
     --danger: 350 90% 70%;
 
     --tint: 0 0% 100%;
+    --scrim: 265 50% 2%;
 
     --shadow-color: 265 60% 2%;
     --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.5),

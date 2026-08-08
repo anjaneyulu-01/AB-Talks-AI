@@ -78,6 +78,10 @@ export default {
          * invisible in one of them.
          */
         tint: withAlpha('--tint'),
+
+        /** Modal/sheet backdrop. Dark in BOTH themes — a scrim's job is to
+         *  dim the page, so it is deliberately not part of the surface scale. */
+        scrim: withAlpha('--scrim'),
       },
 
       fontFamily: {

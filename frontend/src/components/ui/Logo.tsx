@@ -14,13 +14,16 @@ export function Logo({ className }: { className?: string }) {
       className={cn('shrink-0', className)}
       aria-hidden
     >
-      <rect width="100" height="100" rx="24" className="fill-surface-raised" />
+      {/* A brand-tinted plate, not `fill-surface-raised`. Surface is white in
+          light mode, which made the mark a white square on a warm off-white
+          page — effectively invisible. A violet tint reads in both themes. */}
+      <rect width="100" height="100" rx="24" className="fill-brand-500/[0.14]" />
       <rect
         width="100"
         height="100"
         rx="24"
-        className="fill-brand-600/10 stroke-line-strong"
-        strokeWidth="1"
+        className="fill-transparent stroke-brand-500/25"
+        strokeWidth="1.5"
       />
       <path
         d="M28 70 L50 30 L72 70"
