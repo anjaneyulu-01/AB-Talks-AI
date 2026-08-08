@@ -1,225 +1,264 @@
 /**
- * Design tokens.
+ * Design tokens — MIDNIGHT INTELLIGENCE.
  *
- * ## Why this file exists
+ * The identity: a student coding at 2am, building their future. Deep, focused,
+ * disciplined, premium-engineering. Closer to Linear / Raycast / Superhuman
+ * than to any generic AI tool.
+ *
+ * ## How it works
  *
  * Every colour is a CSS custom property. Components reference semantic names
- * (`bg-surface`, `text-ink`, `border-line`) and never a literal, so switching
- * theme swaps the tokens and no component code changes.
+ * (`bg-surface`, `text-ink`, `border-line`) and never a literal, so a whole
+ * re-skin is a change to this file alone. Values are raw HSL channels
+ * (`243 75% 59%`), not `hsl(...)`, so Tailwind's `<alpha-value>` works:
+ * `bg-brand-500/20` resolves correctly.
  *
- * Values are raw HSL channels (`152 72% 40%`), not `hsl(...)`, so Tailwind's
- * `<alpha-value>` placeholder works: `bg-brand-500/20` resolves correctly.
+ * ## The palette
  *
- * ## The palette decision
+ * Depth comes from LAYERED NAVY SURFACES, not from colour. The background is a
+ * near-black navy (#070B14); surfaces step up in small, cool increments. The
+ * brand — electric indigo (#4F46E5) into signal cyan (#00C2FF) — appears only
+ * where it earns attention. Everything else is restraint.
  *
- * Green is the primary — it reads as growth, readiness, and *go*, which is
- * precisely what a pre-interview product is for. Violet was competent and
- * generic; green is warmer, fresher, and far less common in this category.
+ * Dark is the primary theme; it *is* the identity. A clean light variant
+ * exists for daytime, but midnight is the default.
  *
- * **The collision, and why it is deliberate.** Score bands already use green
- * for `exceptional`. Making the brand a *different* green would mean "green"
- * signals two unrelated things and the report becomes ambiguous. So the brand
- * green and the success green are the same family on purpose: green means
- * good / growth / ready everywhere, and brand reinforces scoring rather than
- * competing with it. `strong` moves to sky-blue so the ladder still reads as
- * four distinct steps.
- *
- * ## The neutrals
- *
- * Light mode is a faintly green-tinted white — near-white, not clinical
- * #FFFFFF, so it feels like paper rather than a spec sheet. Text is a deep
- * navy-slate rather than black: it sits better beside green than a warm brown
- * black does, and it is what makes the whole thing read fresh.
- *
- * Dark mode uses a cool slate base rather than a green-tinted one. Tinting a
- * dark ground green makes it look sickly and dated; a neutral-cool ground with
- * vivid green accents is what keeps it premium.
+ * Semantic colours are distinct from the brand on purpose: success is green
+ * (#00E676), achievement is gold (#FFD54F). Green never means "brand" here —
+ * it means "you did well" — so the report reads unambiguously.
  */
 
 @layer base {
+  /* ====================================================================
+     DARK — the primary theme. Bare :root so it is the default even before
+     the theme script runs, and re-asserted under .dark for the toggle.
+     ==================================================================== */
   :root {
-    /* ---- Surfaces ------------------------------------------------------ */
-    /* Near-white, only a whisper of green. The previous 40%-saturation mint
-       made the whole page one flat wash and stopped white cards popping. A
-       clean base lets the aurora provide colour as distinct pools instead of
-       tinting everything uniformly. */
-    --bg: 160 24% 99%;
-    --bg-50: 158 20% 97%;
-    --bg-100: 156 18% 95%;
-    --bg-200: 155 16% 93%;
-    --bg-900: 165 30% 99.5%;
+    /* ---- Surfaces: layered navy, near-black to elevated --------------- */
+    --bg: 221 48% 5%;          /* #070B14  primary background            */
+    --bg-50: 222 42% 10%;
+    --bg-100: 222 45% 8%;
+    --bg-200: 222 47% 6%;
+    --bg-900: 223 55% 3%;
 
-    /* Cards are pure white so they lift cleanly off the tinted ground. */
+    --surface: 222 47% 11%;    /* #0F172A  secondary surface / cards      */
+    --surface-raised: 222 43% 14%; /* #131C31 elevated surface            */
+    --surface-overlay: 221 38% 17%;
+    --surface-hover: 221 34% 20%;
+
+    /* ---- Lines: white at ~8% / ~14%, expressed as solid navies -------- */
+    --line: 221 26% 18%;
+    --line-strong: 220 22% 27%;
+
+    /* ---- Text -------------------------------------------------------- */
+    /* Warm-cool off-white, never pure #FFF — pure white glares and haloes
+       on a dark ground over a long 2am session. */
+    --ink: 210 40% 98%;        /* #F8FAFC */
+    --ink-muted: 215 20% 68%;  /* #94A3B8-ish, lifted slightly for AA     */
+    --ink-subtle: 216 16% 52%;
+    --ink-faint: 217 15% 40%;
+
+    /* ---- Brand: electric indigo -------------------------------------- */
+    --brand-50: 243 100% 96%;
+    --brand-100: 243 96% 92%;
+    --brand-300: 243 90% 80%;
+    --brand-400: 243 85% 71%;
+    --brand-500: 243 75% 62%;  /* #4F46E5, lifted a touch for dark ground */
+    --brand-600: 243 68% 54%;
+    --brand-700: 244 62% 46%;
+    --brand-900: 245 55% 30%;
+
+    /* ---- Accents ----------------------------------------------------- */
+    --accent-cyan: 194 100% 55%;  /* #00C2FF Signal Cyan — the brand pair */
+    --accent-teal: 174 82% 52%;
+    --accent-sky: 205 96% 62%;
+    --accent-violet: 250 92% 74%;
+    --accent-amber: 45 100% 65%;  /* #FFD54F gold — achievement          */
+    /* Legacy alias so older gradient references stay on-brand — points at
+       the cyan end of the primary ramp rather than an off-palette lime. */
+    --accent-lime: 194 90% 58%;
+
+    /* ---- Score bands: distinct from brand ---------------------------- */
+    --band-exceptional: 151 90% 50%;  /* #00E676 success green            */
+    --band-strong: 194 100% 58%;      /* signal cyan                      */
+    --band-developing: 45 100% 62%;   /* gold                             */
+    --band-emerging: 0 84% 66%;       /* soft error red                   */
+
+    --success: 151 90% 50%;
+    --warn: 38 95% 56%;
+    --danger: 0 84% 66%;
+
+    /* ---- Primary CTA: electric indigo, white label ------------------- */
+    /* white on #4F46E5 ≈ 6.5:1 — passes AA in both themes, so the CTA is one
+       consistent colour rather than the theme-inverted pair green needed. */
+    --cta-bg: 243 75% 60%;
+    --cta-bg-hover: 243 84% 67%;
+    --cta-fg: 0 0% 100%;
+
+    /* ---- Overlays ---------------------------------------------------- */
+    --tint: 0 0% 100%;          /* white, for translucent washes on dark  */
+    --scrim: 223 60% 2%;
+
+    /* ---- Elevation: restrained. Depth is from surface layering, not
+       heavy shadow (the brief is explicit: avoid excessive shadows). ---- */
+    --shadow-color: 223 75% 2%;
+    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.5),
+      0 2px 10px -3px hsl(var(--shadow-color) / 0.5);
+    --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.5),
+      0 10px 28px -8px hsl(var(--shadow-color) / 0.6);
+    --shadow-float: 0 8px 16px -6px hsl(var(--shadow-color) / 0.6),
+      0 24px 60px -18px hsl(var(--shadow-color) / 0.75);
+    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.05);
+
+    --grid-line: 220 60% 80%;
+    --grid-alpha: 0.03;
+    --glow-alpha: 0.14;
+
+    color-scheme: dark;
+  }
+
+  /* Explicit dark selector for the toggle — identical to :root above. */
+  .dark {
+    --bg: 221 48% 5%;
+    --bg-50: 222 42% 10%;
+    --bg-100: 222 45% 8%;
+    --bg-200: 222 47% 6%;
+    --bg-900: 223 55% 3%;
+
+    --surface: 222 47% 11%;
+    --surface-raised: 222 43% 14%;
+    --surface-overlay: 221 38% 17%;
+    --surface-hover: 221 34% 20%;
+
+    --line: 221 26% 18%;
+    --line-strong: 220 22% 27%;
+
+    --ink: 210 40% 98%;
+    --ink-muted: 215 20% 68%;
+    --ink-subtle: 216 16% 52%;
+    --ink-faint: 217 15% 40%;
+
+    --brand-50: 243 100% 96%;
+    --brand-100: 243 96% 92%;
+    --brand-300: 243 90% 80%;
+    --brand-400: 243 85% 71%;
+    --brand-500: 243 75% 62%;
+    --brand-600: 243 68% 54%;
+    --brand-700: 244 62% 46%;
+    --brand-900: 245 55% 30%;
+
+    --accent-cyan: 194 100% 55%;
+    --accent-teal: 174 82% 52%;
+    --accent-sky: 205 96% 62%;
+    --accent-violet: 250 92% 74%;
+    --accent-amber: 45 100% 65%;
+    --accent-lime: 194 90% 58%;
+
+    --band-exceptional: 151 90% 50%;
+    --band-strong: 194 100% 58%;
+    --band-developing: 45 100% 62%;
+    --band-emerging: 0 84% 66%;
+
+    --success: 151 90% 50%;
+    --warn: 38 95% 56%;
+    --danger: 0 84% 66%;
+
+    --cta-bg: 243 75% 60%;
+    --cta-bg-hover: 243 84% 67%;
+    --cta-fg: 0 0% 100%;
+
+    --tint: 0 0% 100%;
+    --scrim: 223 60% 2%;
+
+    --shadow-color: 223 75% 2%;
+    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.5),
+      0 2px 10px -3px hsl(var(--shadow-color) / 0.5);
+    --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.5),
+      0 10px 28px -8px hsl(var(--shadow-color) / 0.6);
+    --shadow-float: 0 8px 16px -6px hsl(var(--shadow-color) / 0.6),
+      0 24px 60px -18px hsl(var(--shadow-color) / 0.75);
+    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.05);
+
+    --grid-line: 220 60% 80%;
+    --grid-alpha: 0.03;
+    --glow-alpha: 0.14;
+
+    color-scheme: dark;
+  }
+
+  /* ====================================================================
+     LIGHT — the daytime variant. Clean, cool near-white with the same
+     indigo/cyan brand, semantic colours darkened for contrast on white.
+     ==================================================================== */
+  .light {
+    --bg: 220 33% 98%;
+    --bg-50: 220 26% 96%;
+    --bg-100: 220 22% 94%;
+    --bg-200: 219 20% 92%;
+    --bg-900: 220 40% 99%;
+
     --surface: 0 0% 100%;
     --surface-raised: 0 0% 100%;
     --surface-overlay: 0 0% 100%;
-    --surface-hover: 150 30% 97%;
+    --surface-hover: 220 30% 97%;
 
-    /* ---- Lines --------------------------------------------------------- */
-    --line: 155 18% 89%;
-    --line-strong: 155 16% 82%;
+    --line: 220 20% 89%;
+    --line-strong: 220 17% 82%;
 
-    /* ---- Text ---------------------------------------------------------- */
-    /* Deep navy-slate, not black. Pairs with green far better than a warm
-       black, and is the single biggest reason this reads "fresh". */
-    --ink: 210 40% 12%;
-    --ink-muted: 210 14% 38%;
-    --ink-subtle: 208 12% 50%;
-    --ink-faint: 208 11% 62%;
+    --ink: 222 47% 12%;        /* deep navy text — matches the brand mood */
+    --ink-muted: 216 16% 40%;
+    --ink-subtle: 216 13% 52%;
+    --ink-faint: 216 12% 64%;
 
-    /* ---- Brand — green ------------------------------------------------- */
-    /* 600 is the button fill: dark enough for white label text at AA. */
-    --brand-50: 150 70% 96%;
-    --brand-100: 150 66% 91%;
-    --brand-300: 152 60% 62%;
-    --brand-400: 152 66% 46%;
-    --brand-500: 153 72% 38%;
-    --brand-600: 154 76% 32%;
-    --brand-700: 156 78% 26%;
-    --brand-900: 158 70% 16%;
+    --brand-50: 243 100% 97%;
+    --brand-100: 243 92% 93%;
+    --brand-300: 243 78% 74%;
+    --brand-400: 243 72% 64%;
+    --brand-500: 243 70% 56%;
+    --brand-600: 244 66% 48%;
+    --brand-700: 245 64% 40%;
+    --brand-900: 245 58% 26%;
 
-    --accent-cyan: 190 88% 38%;
-    --accent-teal: 172 80% 34%;
-    /* The bright pop in gradients — a yellow-green that keeps the aurora from
-       reading as one flat wash of brand colour. */
-    --accent-lime: 92 68% 40%;
-    --accent-amber: 36 92% 46%;
-    --accent-sky: 205 90% 48%;
-    /* Cool counterpoint to all the green — used ONLY in the decorative aurora,
-       never semantically, so it can add depth without competing with the
-       unified green meaning. */
-    --accent-violet: 262 78% 60%;
+    --accent-cyan: 196 90% 40%;
+    --accent-teal: 174 78% 34%;
+    --accent-sky: 205 90% 46%;
+    --accent-violet: 250 74% 58%;
+    --accent-amber: 38 92% 46%;
+    --accent-lime: 196 84% 42%;
 
+    --band-exceptional: 152 78% 32%;
+    --band-strong: 198 90% 38%;
+    /* Gold is the hardest colour to keep readable on white — darkened to a
+       deep amber so it clears AA (3:1) for large text and UI on the light
+       surface. */
+    --band-developing: 36 96% 36%;
+    --band-emerging: 0 74% 52%;
 
-    /* ---- Primary CTA --------------------------------------------------- */
-    /* Green is perceptually bright, so white-on-green needs a much darker
-       green than white-on-violet did — the first pass failed AA at 4.08:1.
-       Light mode darkens the fill and keeps white text (4.56:1). */
-    --cta-bg: 154 76% 29%;
-    --cta-bg-hover: 154 78% 25%;
+    --success: 152 78% 32%;
+    --warn: 36 96% 36%;
+    --danger: 0 74% 52%;
+
+    /* white on indigo-600 ≈ 7:1 in light mode */
+    --cta-bg: 244 66% 50%;
+    --cta-bg-hover: 244 70% 44%;
     --cta-fg: 0 0% 100%;
 
-    /* ---- Score bands --------------------------------------------------- */
-    /* `exceptional` shares the brand hue on purpose (see header). `strong`
-       moved to sky so the four steps stay visually distinct. */
-    --band-exceptional: 153 72% 34%;
-    --band-strong: 200 88% 40%;
-    --band-developing: 36 92% 42%;
-    --band-emerging: 350 74% 50%;
+    --tint: 222 47% 10%;
+    --scrim: 222 45% 12%;
 
-    --success: 153 72% 34%;
-    --warn: 36 92% 42%;
-    --danger: 350 74% 50%;
-
-    /* ---- Tint ---------------------------------------------------------- */
-    /* One token drives every translucent overlay. Black in light mode, white
-       in dark, so `bg-tint/[0.06]` is a subtle wash in both instead of being
-       invisible in one of them. */
-    --tint: 205 40% 10%;
-
-    /* ---- Scrim --------------------------------------------------------- */
-    /* A modal backdrop must DARKEN the page in both themes, so it is not
-       derived from the surface scale — that inverts. */
-    --scrim: 205 45% 12%;
-
-    /* ---- Elevation ----------------------------------------------------- */
-    /* Green-tinted and a touch stronger, so white cards lift cleanly off the
-       near-white base with a soft coloured shadow rather than a flat grey one. */
-    --shadow-color: 165 55% 26%;
-    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.08),
-      0 6px 18px -6px hsl(var(--shadow-color) / 0.16);
-    --shadow-raised: 0 2px 6px hsl(var(--shadow-color) / 0.09),
-      0 16px 36px -10px hsl(var(--shadow-color) / 0.2);
-    --shadow-float: 0 10px 22px -6px hsl(var(--shadow-color) / 0.16),
-      0 30px 70px -18px hsl(var(--shadow-color) / 0.26);
+    --shadow-color: 222 45% 30%;
+    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.07),
+      0 6px 18px -6px hsl(var(--shadow-color) / 0.14);
+    --shadow-raised: 0 2px 6px hsl(var(--shadow-color) / 0.08),
+      0 16px 36px -10px hsl(var(--shadow-color) / 0.18);
+    --shadow-float: 0 10px 22px -6px hsl(var(--shadow-color) / 0.14),
+      0 30px 70px -18px hsl(var(--shadow-color) / 0.22);
     --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.7);
 
-    --grid-line: 160 25% 25%;
-    --grid-alpha: 0.05;
-    --glow-alpha: 0.09;
+    --grid-line: 222 40% 30%;
+    --grid-alpha: 0.045;
+    --glow-alpha: 0.08;
 
     color-scheme: light;
-  }
-
-  .dark {
-    /* ---- Surfaces ------------------------------------------------------ */
-    /* Cool slate, NOT green-tinted. A green-tinted dark ground looks sickly;
-       neutral-cool with vivid green accents is what stays premium. */
-    --bg: 205 32% 5%;
-    --bg-50: 204 24% 10%;
-    --bg-100: 204 26% 8%;
-    --bg-200: 205 28% 7%;
-    --bg-900: 206 36% 3%;
-
-    --surface: 204 26% 8%;
-    --surface-raised: 204 22% 11%;
-    --surface-overlay: 203 20% 14%;
-    --surface-hover: 203 19% 16%;
-
-    /* ---- Lines --------------------------------------------------------- */
-    --line: 204 18% 18%;
-    --line-strong: 204 16% 26%;
-
-    /* ---- Text ---------------------------------------------------------- */
-    /* Slightly cool off-white. Pure #FFF on dark glares and causes halation
-       on long text — a real problem on an interview screen at 1am. */
-    --ink: 170 25% 96%;
-    --ink-muted: 204 12% 70%;
-    --ink-subtle: 204 10% 52%;
-    --ink-faint: 204 10% 38%;
-
-    /* ---- Brand — green ------------------------------------------------- */
-    --brand-50: 150 80% 96%;
-    --brand-100: 150 78% 90%;
-    --brand-300: 152 76% 72%;
-    --brand-400: 152 78% 58%;
-    --brand-500: 152 76% 48%;
-    --brand-600: 153 74% 40%;
-    --brand-700: 155 74% 32%;
-    --brand-900: 158 62% 20%;
-
-    --accent-cyan: 190 92% 60%;
-    --accent-teal: 172 82% 55%;
-    --accent-lime: 88 76% 58%;
-    --accent-amber: 40 96% 60%;
-    --accent-sky: 205 95% 62%;
-    --accent-violet: 262 90% 72%;
-
-
-    /* Dark mode inverts the relationship instead of darkening further: a
-       bright green fill with near-black text. Darkening the green until white
-       passed would have produced a muddy button on a dark ground; bright fill
-       + dark ink is what Spotify and Duolingo do, and it measures 10.17:1. */
-    --cta-bg: 152 76% 52%;
-    --cta-bg-hover: 152 80% 58%;
-    --cta-fg: 160 45% 8%;
-
-    /* ---- Score bands --------------------------------------------------- */
-    --band-exceptional: 152 72% 55%;
-    --band-strong: 200 92% 62%;
-    --band-developing: 40 96% 60%;
-    --band-emerging: 350 90% 70%;
-
-    --success: 152 72% 55%;
-    --warn: 40 96% 60%;
-    --danger: 350 90% 70%;
-
-    --tint: 0 0% 100%;
-    --scrim: 205 50% 2%;
-
-    --shadow-color: 205 60% 2%;
-    --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.5),
-      0 4px 16px -4px hsl(var(--shadow-color) / 0.55);
-    --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.5),
-      0 12px 32px -8px hsl(var(--shadow-color) / 0.65);
-    --shadow-float: 0 8px 16px -4px hsl(var(--shadow-color) / 0.55),
-      0 24px 64px -16px hsl(var(--shadow-color) / 0.75);
-    --shadow-inset-line: inset 0 1px 0 hsl(0 0% 100% / 0.05);
-
-    --grid-line: 0 0% 100%;
-    --grid-alpha: 0.035;
-    --glow-alpha: 0.12;
-
-    color-scheme: dark;
   }
 }

@@ -7,19 +7,22 @@
       // theme in an effect would show every dark-mode user a white flash on
       // load. This decides the class; the ThemeProvider adopts it rather than
       // re-deciding, so there is no second repaint either.
+      // Midnight is the identity: a first-time visitor with no stored choice
+      // lands in dark, NOT in whatever their OS happens to be. Only an explicit
+      // 'light' choice, or 'system' resolving to light, flips it.
       (function () {
+        var el = document.documentElement
         try {
           var stored = localStorage.getItem('abtalks-theme')
-          var dark =
-            stored === 'dark' ||
-            ((stored === 'system' || !stored) &&
-              window.matchMedia('(prefers-color-scheme: dark)').matches)
-          document.documentElement.classList.toggle('dark', dark)
-          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+          var light =
+            stored === 'light' ||
+            (stored === 'system' &&
+              !window.matchMedia('(prefers-color-scheme: dark)').matches)
+          el.classList.add(light ? 'light' : 'dark')
+          el.style.colorScheme = light ? 'light' : 'dark'
         } catch (e) {
-          // Storage blocked. Fall back to dark, which suits the product's
-          // most common usage time.
-          document.documentElement.classList.add('dark')
+          el.classList.add('dark')
+          el.style.colorScheme = 'dark'
         }
       })()
     </script>
@@ -45,12 +48,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230a0a0f'/><path d='M28 68 L50 30 L72 68' stroke='%236366f1' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='38' y1='56' x2='62' y2='56' stroke='%2322d3ee' stroke-width='9' stroke-linecap='round'/></svg>"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23070B14'/><path d='M28 68 L50 30 L72 68' stroke='%234F46E5' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='38' y1='56' x2='62' y2='56' stroke='%2300C2FF' stroke-width='9' stroke-linecap='round'/></svg>"
     />
   </head>
   <body>

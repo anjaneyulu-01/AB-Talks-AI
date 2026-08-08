@@ -152,19 +152,15 @@
     @apply border border-line bg-surface/70 backdrop-blur-xl;
   }
 
-  /* The premium glass card: a frosted body with a faint brand-tinted top edge
-     and a soft coloured inner glow. Reads as an object lit from within. */
+  /* A solid ELEVATED card — a floating workspace, not a frosted-glass panel.
+     Depth comes from the raised surface stepping above the page plus a soft
+     top-edge highlight, in keeping with "avoid glassmorphism everywhere". The
+     name is kept so consumers don't churn. */
   .glass-card {
-    @apply relative overflow-hidden rounded-2xl border backdrop-blur-xl;
-    background: linear-gradient(
-      180deg,
-      hsl(var(--surface) / 0.82),
-      hsl(var(--surface) / 0.7)
-    );
-    border-color: hsl(var(--brand-500) / 0.18);
+    @apply relative overflow-hidden rounded-2xl border border-line bg-surface-raised;
     box-shadow:
       var(--shadow-soft),
-      inset 0 1px 0 hsl(var(--brand-400) / 0.12);
+      var(--shadow-inset-line);
   }
 
   /* Coloured hover lift. Neutral shadows say "raised"; a brand-tinted glow says
@@ -198,13 +194,14 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
+    /* Indigo → cyan → indigo, the brand pair only — no rainbow. */
     background: conic-gradient(
       from var(--border-angle, 0deg),
-      hsl(var(--brand-500) / 0.6),
-      hsl(var(--accent-lime) / 0.5),
+      hsl(var(--brand-500) / 0.7),
       hsl(var(--accent-cyan) / 0.6),
-      hsl(var(--band-strong) / 0.5),
-      hsl(var(--brand-500) / 0.6)
+      hsl(var(--brand-500) / 0.15),
+      hsl(var(--accent-cyan) / 0.6),
+      hsl(var(--brand-500) / 0.7)
     );
     -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
@@ -327,26 +324,33 @@
 
     `in oklch` is supported in every browser since early 2023.
   */
+  /* The one brand gradient: electric indigo → signal cyan, interpolated in
+     oklch so the midpoint stays vivid. Static, not animated — the brief is
+     explicit that gradients belong to moments that matter, not to constant
+     motion. Reserved for hero and key headings; not every title. */
   .text-gradient-brand {
     background-image: linear-gradient(
-      135deg in oklch,
-      hsl(var(--brand-500)),
-      hsl(var(--accent-lime)),
-      hsl(var(--accent-cyan)),
-      hsl(var(--band-strong)),
-      hsl(var(--brand-500))
+      120deg in oklch,
+      hsl(var(--brand-400)),
+      hsl(var(--accent-cyan))
     );
-    /* Oversized so there is room to pan. The slow drift makes the colour feel
-       alive without ever moving fast enough to distract from reading. Purely
-       decorative clip-text, so no contrast concern. */
-    background-size: 220% 220%;
-    @apply animate-gradient-pan bg-clip-text text-transparent;
+    @apply bg-clip-text text-transparent;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .text-gradient-brand {
-      @apply animate-none;
-      background-position: 0% 50%;
-    }
+  /* Achievement gradient: gold → success green. For scores, streaks, wins. */
+  .text-gradient-gold {
+    background-image: linear-gradient(
+      120deg in oklch,
+      hsl(var(--accent-amber)),
+      hsl(var(--band-exceptional))
+    );
+    @apply bg-clip-text text-transparent;
+  }
+
+  /* Large headings use the display face — a touch more character than Inter. */
+  .text-display,
+  .text-h1,
+  .text-h2 {
+    @apply font-display;
   }
 
   /* Fades a decorative grid out toward the edges so it never competes with

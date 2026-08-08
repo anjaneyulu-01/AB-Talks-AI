@@ -102,11 +102,14 @@ export default {
       },
 
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Plus Jakarta Sans leads for large headings — a touch more character
+        // and warmth than Inter at display sizes, which reads as "expensive".
+        display: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       fontSize: {
-        // Tightened tracking on display sizes — Inter needs it above ~32px.
+        // Tightened tracking on display sizes — needs it above ~32px.
         display: ['clamp(2.5rem, 6vw, 4.5rem)', { lineHeight: '1.02', letterSpacing: '-0.035em', fontWeight: '800' }],
         h1: ['clamp(1.875rem, 4vw, 3rem)', { lineHeight: '1.08', letterSpacing: '-0.03em', fontWeight: '700' }],
         h2: ['clamp(1.5rem, 3vw, 1.75rem)', { lineHeight: '1.15', letterSpacing: '-0.022em', fontWeight: '650' }],

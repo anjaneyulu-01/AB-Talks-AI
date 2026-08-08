@@ -49,12 +49,19 @@ function readStoredTheme(): Theme {
   } catch {
     // Private browsing or blocked storage. Fall through to the default.
   }
-  return 'system'
+  // Midnight is the identity, so a first-time visitor lands in dark — not
+  // 'system'. The toggle still offers light and system.
+  return 'dark'
 }
 
 function applyTheme(resolved: 'light' | 'dark') {
   const root = document.documentElement
-  root.classList.toggle('dark', resolved === 'dark')
+  // Explicit, mutually-exclusive classes. `.dark` must be present in dark mode
+  // for Tailwind's `dark:` variants to resolve (darkMode: 'class'); `.light`
+  // activates the light token block. Bare :root is dark, so nothing flashes if
+  // the script is slow.
+  root.classList.remove('dark', 'light')
+  root.classList.add(resolved)
   // Keeps native UI (scrollbars, form controls, the browser's own chrome) in
   // step with the page. Without it a dark page gets light scrollbars.
   root.style.colorScheme = resolved
@@ -62,14 +69,14 @@ function applyTheme(resolved: 'light' | 'dark') {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() =>
-    typeof window === 'undefined' ? 'system' : readStoredTheme(),
+    typeof window === 'undefined' ? 'dark' : readStoredTheme(),
   )
   const [resolved, setResolved] = useState<'light' | 'dark'>(() =>
     typeof window === 'undefined'
       ? 'dark'
-      : document.documentElement.classList.contains('dark')
-        ? 'dark'
-        : 'light',
+      : document.documentElement.classList.contains('light')
+        ? 'light'
+        : 'dark',
   )
 
   useEffect(() => {
