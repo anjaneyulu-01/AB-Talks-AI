@@ -11,7 +11,7 @@ import { Hero, ProofStrip } from '@/features/landing/Hero'
 import { PillNav } from '@/features/landing/PillNav'
 import { DerivationStrip } from '@/features/landing/LiveDemo'
 import { StepFlow } from '@/features/landing/StepFlow'
-import { EASE_OUT, revealOnScroll, staggerContainer, staggerDelay } from '@/lib/motion'
+import { EASE_OUT, revealOnScroll, staggerDelay } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 /**
@@ -51,7 +51,6 @@ export function LandingPage() {
       <Hero />
       <TechMarquee />
       <ProofStrip />
-      <TheGap />
       <Capabilities />
       <HowItWorks />
       <FairnessMoment />
@@ -143,76 +142,6 @@ function SectionHead({
       <h2 className="text-h1 text-gradient">{title}</h2>
       {lead && <p className="mt-5 text-lead text-ink-muted">{lead}</p>}
     </motion.div>
-  )
-}
-
-/* ------------------------------------------------------------------ The gap */
-
-/**
- * Deliberately card-free. A purely editorial moment lets the eye rest between
- * the dense demo above and the flow below, and lets the strongest sentence on
- * the page carry itself without a box drawn around it.
- */
-function TheGap() {
-  const points: [string, string][] = [
-    [
-      'Question banks are generic.',
-      'The same fifty questions for everyone, regardless of what you actually studied or how it went.',
-    ],
-    [
-      'Mock tools are static.',
-      'Difficulty never moves. You either get bored or you drown, and neither tells you where you stand.',
-    ],
-    [
-      'Automated scores are hollow.',
-      '"Communication: 7/10." No evidence, no examples, nothing you can act on tomorrow morning.',
-    ],
-  ]
-
-  return (
-    <section className="relative py-20 sm:py-28">
-      <Container>
-        <motion.div {...revealOnScroll} className="mx-auto max-w-3xl text-center">
-          <p className="eyebrow mb-5">The gap</p>
-          <h2 className="text-h1 text-gradient">
-            You finished the cohort.{' '}
-            <span className="text-ink-muted">
-              You still don't know if you're ready.
-            </span>
-          </h2>
-        </motion.div>
-
-        <motion.div
-          variants={staggerContainer(0.08)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-          className="mx-auto mt-12 max-w-2xl space-y-5"
-        >
-          {points.map(([title, body], i) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.5, delay: staggerDelay(i, 0.08), ease: EASE_OUT }}
-              className="border-l-2 border-line pl-5 sm:pl-6"
-            >
-              <p className="text-[0.9375rem] font-semibold text-ink">{title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-ink-muted">{body}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.p
-          {...revealOnScroll}
-          className="mx-auto mt-12 max-w-2xl text-center text-lead text-ink"
-        >
-          Nothing in between tells you whether you can explain <em>why</em> you chose
-          cosine similarity when a senior engineer pushes back.
-        </motion.p>
-      </Container>
-    </section>
   )
 }
 

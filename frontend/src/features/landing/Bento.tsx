@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
-  Ban,
   Gauge,
   Layers,
   ShieldCheck,
@@ -124,41 +123,8 @@ export function Bento() {
         </div>
       </Cell>
 
-      {/* --------------------------------------------------- Fairness (tall) */}
-      <Cell className="lg:col-span-2 lg:row-span-2" index={1}>
-        <GradientTile icon={Ban} gradient="from-ink-faint to-ink-subtle" size="md" className="mb-4" />
-        <CellTitle>Skipped means skipped</CellTitle>
-        <CellBody>
-          Material you never covered is excluded from the question pool entirely —
-          enforced in code, not requested in a prompt.
-        </CellBody>
-
-        <div className="mt-5 flex-1 space-y-2">
-          {[
-            { d: 27, t: 'Security & Guardrails' },
-            { d: 28, t: 'Docker & Kubernetes' },
-          ].map((row) => (
-            <div
-              key={row.d}
-              className="flex items-center gap-2.5 rounded-lg border border-dashed border-line-strong px-3 py-2.5"
-            >
-              <span className="nums text-[0.6875rem] text-ink-faint">D{row.d}</span>
-              <span className="min-w-0 flex-1 truncate text-xs text-ink-faint line-through">
-                {row.t}
-              </span>
-              <Ban className="size-3 shrink-0 text-ink-faint" />
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-5 rounded-xl border border-line bg-tint/[0.03] p-3 text-xs leading-relaxed text-ink-muted">
-          Asking about material someone never saw isn't rigour — it manufactures a
-          failure. It lands in their roadmap instead.
-        </p>
-      </Cell>
-
       {/* -------------------------------------------------- Adaptation (wide) */}
-      <Cell className="lg:col-span-2" index={2}>
+      <Cell className="lg:col-span-2" index={1}>
         <GradientTile icon={Gauge} gradient="from-accent-cyan to-accent-sky" size="md" className="mb-4" />
         <CellTitle>Difficulty that moves</CellTitle>
         <CellBody>
@@ -186,7 +152,7 @@ export function Bento() {
       </Cell>
 
       {/* ---------------------------------------------------- Reliability */}
-      <Cell className="lg:col-span-2" index={3}>
+      <Cell className="lg:col-span-2" index={2}>
         <GradientTile icon={ShieldCheck} gradient="from-band-exceptional to-accent-teal" size="md" className="mb-4" />
         <CellTitle>It cannot break</CellTitle>
         <CellBody>
@@ -214,7 +180,7 @@ export function Bento() {
       </Cell>
 
       {/* ------------------------------------------------------ Auditability */}
-      <Cell className="lg:col-span-4" index={4}>
+      <Cell className="lg:col-span-4" index={3}>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="min-w-0 flex-1">
             <GradientTile icon={Sparkles} gradient="from-accent-amber to-warn" size="md" className="mb-4" />
