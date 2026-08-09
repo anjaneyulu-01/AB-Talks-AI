@@ -19,12 +19,16 @@ import { ACTION_META, cn } from '@/lib/utils'
 export function TranscriptTurn({
   message,
   isLatest,
+  questionNumber,
 }: {
   message: TranscriptMessage
   isLatest: boolean
+  /** 0-based index among interviewer questions. Used as a scroll anchor so the
+   *  review nav can jump back to any earlier question. */
+  questionNumber?: number
 }) {
   if (message.role === 'interviewer') {
-    return <InterviewerTurn message={message} isLatest={isLatest} />
+    return <InterviewerTurn message={message} isLatest={isLatest} questionNumber={questionNumber} />
   }
   return <CandidateTurn message={message} />
 }
@@ -32,19 +36,23 @@ export function TranscriptTurn({
 function InterviewerTurn({
   message,
   isLatest,
+  questionNumber,
 }: {
   message: Extract<TranscriptMessage, { role: 'interviewer' }>
   isLatest: boolean
+  questionNumber?: number
 }) {
   const [showReason, setShowReason] = useState(false)
   const action = message.action ? ACTION_META[message.action] : null
 
   return (
     <motion.div
+      id={questionNumber !== undefined ? `interview-q-${questionNumber}` : undefined}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-8"
+      // scroll-mt keeps a jumped-to question clear of the sticky top bar.
+      className="mb-8 scroll-mt-24"
     >
       <div className="flex items-start gap-3">
         <Logo className="mt-0.5 size-7 shrink-0" />

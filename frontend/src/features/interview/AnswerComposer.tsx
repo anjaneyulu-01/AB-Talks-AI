@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { AlertCircle, Mic, Send, Square } from 'lucide-react'
+import { AlertCircle, Mic, Send, SkipForward, Square } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 import { Button } from '@/components/ui/primitives'
@@ -27,11 +27,17 @@ const MAX_HEIGHT = 280
  *   read it, fix a misheard word, and only then submit. Auto-submitting a
  *   misrecognition would be exactly the kind of small betrayal that erodes
  *   trust in a high-stakes moment.
+ *
+ * - **Skip is a quiet, deliberate escape hatch.** Placed away from Send so it is
+ *   never fat-fingered, it submits an honest "not sure" rather than a fake
+ *   answer — the adaptive controller reads that as a weak turn and eases off or
+ *   pivots, which is exactly right. Not knowing something is real signal.
  */
 export function AnswerComposer({
   value,
   onChange,
   onSubmit,
+  onSkip,
   disabled,
   pending,
   error,
@@ -43,6 +49,7 @@ export function AnswerComposer({
   value: string
   onChange: (value: string) => void
   onSubmit: () => void
+  onSkip?: () => void
   disabled: boolean
   pending: boolean
   error: string | null
@@ -177,7 +184,25 @@ export function AnswerComposer({
           />
 
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 px-3 pb-3">
-            <div className="flex items-center gap-3 text-[0.6875rem] text-ink-faint">
+            <div className="flex items-center gap-2.5 text-[0.6875rem] text-ink-faint">
+              {/* Skip: honest escape hatch, kept far from Send so it's never a
+                  misfire. Hidden while dictating so it can't cut off the mic. */}
+              {onSkip && !rec.listening && (
+                <button
+                  type="button"
+                  onClick={onSkip}
+                  disabled={disabled}
+                  aria-label="Skip this question — I'm not sure"
+                  className={cn(
+                    'flex items-center gap-1 rounded-md px-1.5 py-1 font-medium transition-colors',
+                    'text-ink-faint hover:bg-tint/[0.05] hover:text-ink-subtle',
+                    'disabled:pointer-events-none disabled:opacity-40',
+                  )}
+                >
+                  <SkipForward className="size-3" />
+                  Skip
+                </button>
+              )}
               <span className="hidden items-center gap-1 sm:flex">
                 <kbd className="rounded border border-line-strong bg-tint/[0.04] px-1 py-0.5 font-sans">
                   ⌘

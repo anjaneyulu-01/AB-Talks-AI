@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, FileText, Loader2, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Loader2, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -18,9 +18,15 @@ import { ThinkingIndicator } from '@/features/interview/ThinkingIndicator'
 import { TranscriptTurn } from '@/features/interview/TranscriptTurn'
 import { useSpeechSynthesis } from '@/hooks/useSpeech'
 import { api, ApiError } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import type { InterviewerMessage, TranscriptMessage } from '@/lib/types'
 
 const VOICE_PREF_KEY = 'abtalks-voice-mode'
+
+// Skip submits an honest non-answer rather than a fabricated one. The evaluator
+// scores it as a weak turn and the controller eases off or pivots — the correct
+// response to "I don't know", and far better data than a bluffed guess.
+const SKIP_MESSAGE = "I'm not sure about this one — I'd like to skip it and move on."
 
 export function InterviewPage() {
   const { sessionId = '' } = useParams()
@@ -100,6 +106,13 @@ export function InterviewPage() {
     setDraft('')
   }, [draft, submit, state?.done])
 
+  const handleSkip = useCallback(() => {
+    if (submit.isPending || state?.done) return
+    tts.cancel() // stop the question being read aloud if voice mode is on
+    submit.mutate(SKIP_MESSAGE)
+    setDraft('')
+  }, [submit, state?.done, tts])
+
   /* Speak each new interviewer message when voice mode is on. Keyed on message
      id so a re-render never re-speaks the same question, and so a brand-new
      question (new id) is spoken exactly once. */
@@ -165,6 +178,14 @@ export function InterviewPage() {
 
   const messages = state.messages as TranscriptMessage[]
 
+  // 0-based index of each interviewer question, aligned to the message list, so
+  // every question carries a stable scroll anchor for the review nav.
+  let qCounter = -1
+  const questionNumbers = messages.map((m) =>
+    m.role === 'interviewer' ? ++qCounter : undefined,
+  )
+  const questionCount = qCounter + 1
+
   return (
     // `h-dvh` not `h-screen`: on mobile, 100vh excludes browser chrome and the
     // on-screen keyboard, so the composer ends up below the fold exactly when
@@ -192,6 +213,7 @@ export function InterviewPage() {
                     key={message.id}
                     message={message}
                     isLatest={i === messages.length - 1}
+                    questionNumber={questionNumbers[i]}
                   />
                 ))}
               </AnimatePresence>
@@ -205,24 +227,31 @@ export function InterviewPage() {
           </div>
 
           {!state.done && (
-            <AnswerComposer
-              value={draft}
-              onChange={setDraft}
-              onSubmit={handleSubmit}
-              disabled={submit.isPending}
-              pending={submit.isPending}
-              error={
-                submit.isError
-                  ? submit.error instanceof ApiError
-                    ? submit.error.message
-                    : 'That answer could not be submitted. Please try again.'
-                  : null
-              }
-              turn={state.live.turn}
-              plannedTurns={state.live.planned_turns}
-              voiceMode={voiceMode}
-              onMicActivity={tts.cancel}
-            />
+            <>
+              <QuestionNav
+                count={questionCount}
+                plannedTurns={state.live.planned_turns}
+              />
+              <AnswerComposer
+                value={draft}
+                onChange={setDraft}
+                onSubmit={handleSubmit}
+                onSkip={handleSkip}
+                disabled={submit.isPending}
+                pending={submit.isPending}
+                error={
+                  submit.isError
+                    ? submit.error instanceof ApiError
+                      ? submit.error.message
+                      : 'That answer could not be submitted. Please try again.'
+                    : null
+                }
+                turn={state.live.turn}
+                plannedTurns={state.live.planned_turns}
+                voiceMode={voiceMode}
+                onMicActivity={tts.cancel}
+              />
+            </>
           )}
         </div>
 
@@ -238,6 +267,105 @@ export function InterviewPage() {
       >
         <RailContent state={state} />
       </BottomSheet>
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------- Question nav */
+
+/**
+ * The question navigator — a slim strip above the composer.
+ *
+ * It does two jobs the conversational model otherwise leaves implicit:
+ *
+ * 1. **Progress made legible.** "Question 3 of 8" answers "how far in am I?"
+ *    without a countdown — the number simply climbs each time you answer, which
+ *    is what advances the interview (there is no separate "next" button because
+ *    answering *is* next).
+ *
+ * 2. **Review without rewind.** The chevrons scroll back and forth through the
+ *    questions already asked so you can re-read an earlier one. They never let
+ *    you re-answer — the plan has already adapted to what you said — so this is
+ *    read-only navigation, not quiz paging.
+ *
+ * `reviewIndex` snaps back to the latest question whenever a new one arrives, so
+ * the strip always returns to "you are here" the moment the interview moves on.
+ */
+function QuestionNav({ count, plannedTurns }: { count: number; plannedTurns: number }) {
+  const [reviewIndex, setReviewIndex] = useState(Math.max(0, count - 1))
+
+  useEffect(() => {
+    setReviewIndex(Math.max(0, count - 1))
+  }, [count])
+
+  if (count < 1) return null
+
+  const total = Math.max(plannedTurns, count)
+  const latest = count - 1
+  const atLatest = reviewIndex >= latest
+
+  const jumpTo = (next: number) => {
+    const clamped = Math.max(0, Math.min(latest, next))
+    setReviewIndex(clamped)
+    document
+      .getElementById(`interview-q-${clamped}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  return (
+    <div className="shrink-0 border-t border-line bg-base/95 backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-2 sm:px-8">
+        <button
+          type="button"
+          onClick={() => jumpTo(reviewIndex - 1)}
+          disabled={reviewIndex <= 0}
+          aria-label="Review previous question"
+          className={cn(
+            'flex items-center gap-1 rounded-lg py-1.5 pl-1.5 pr-2.5 text-xs font-medium transition-colors',
+            'text-ink-subtle hover:bg-tint/[0.06] hover:text-ink',
+            'disabled:pointer-events-none disabled:opacity-30',
+          )}
+        >
+          <ChevronLeft className="size-4" />
+          <span className="hidden sm:inline">Previous</span>
+        </button>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-ink">
+            {atLatest ? 'Question' : 'Reviewing Q'}{' '}
+            <span className="nums">{reviewIndex + 1}</span>
+            <span className="text-ink-faint"> of {total}</span>
+          </span>
+          {/* A row of ticks — filled up to the current question — so progress
+              reads at a glance even before the words are parsed. */}
+          <div className="hidden items-center gap-1 sm:flex" aria-hidden>
+            {Array.from({ length: Math.min(total, 12) }, (_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'h-1 w-1.5 rounded-full transition-colors',
+                  i <= reviewIndex ? 'bg-brand-400' : 'bg-tint/[0.12]',
+                )}
+              />
+            ))}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => jumpTo(reviewIndex + 1)}
+          disabled={atLatest}
+          aria-label="Back to current question"
+          className={cn(
+            'flex items-center gap-1 rounded-lg py-1.5 pl-2.5 pr-1.5 text-xs font-medium transition-colors',
+            'text-ink-subtle hover:bg-tint/[0.06] hover:text-ink',
+            'disabled:pointer-events-none disabled:opacity-30',
+          )}
+        >
+          <span className="hidden sm:inline">{reviewIndex === latest - 1 ? 'Current' : 'Next'}</span>
+          <ChevronRight className="size-4" />
+        </button>
+      </div>
     </div>
   )
 }
