@@ -135,11 +135,16 @@ export function CohortJourney({
         })}
       </div>
 
-      {/* A day number under every cell. Shares the exact flex structure of the
-          strip above (same gap, same `min-w-[5px] flex-1`), so each number sits
-          perfectly under its cell even as the strip flexes at 390px. Tiny and
-          faint — an axis, not a headline. */}
-      <div className="flex gap-[3px]" aria-hidden>
+      {/* The day axis. Both variants share the strip's flex structure (same
+          gap, same `min-w-[5px] flex-1`) so every label sits under its own cell.
+
+          Two variants because 31 numbers cannot coexist with a ~7px cell: on a
+          phone each two-digit number is wider than its slot and they collide
+          into an unreadable smear. So `sm+` (wide strip) numbers every cell as
+          before, and phones fall back to a sparse milestone axis — a number
+          only every fifth day plus the endpoints — which reads like a chart
+          axis and never overlaps. */}
+      <div className="hidden gap-[3px] sm:flex" aria-hidden>
         {Array.from({ length: COHORT_DAYS }, (_, i) => i + 1).map((day) => (
           <span
             key={day}
@@ -148,6 +153,21 @@ export function CohortJourney({
             {day}
           </span>
         ))}
+      </div>
+      <div className="flex gap-[3px] sm:hidden" aria-hidden>
+        {Array.from({ length: COHORT_DAYS }, (_, i) => i + 1).map((day) => {
+          // Endpoints and multiples of five, but never day 30 — it would sit
+          // one cell from 31 and the two labels would touch.
+          const tick = day === 1 || day === COHORT_DAYS || (day % 5 === 0 && day <= 25)
+          return (
+            <span
+              key={day}
+              className="nums min-w-[5px] flex-1 text-center text-[0.5rem] leading-none tracking-[-0.03em] text-ink-faint"
+            >
+              {tick ? day : ''}
+            </span>
+          )
+        })}
       </div>
       <p className="text-[0.625rem] text-ink-faint">Day 1 → Day 31 · Capstone</p>
 
